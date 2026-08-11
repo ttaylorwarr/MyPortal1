@@ -11,6 +11,15 @@ function img(slug: string, count: number) {
   return Array.from({ length: count }, (_, i) => `/images/${slug}-${i + 1}.svg`).join(",");
 }
 
+// Real hotel-room photos, keyed by a stable "lock" so each listing always
+// gets the same set of images instead of a random one on every request.
+function hotelImg(keywords: string, lockSeed: number, count: number) {
+  return Array.from(
+    { length: count },
+    (_, i) => `https://loremflickr.com/1200/800/${keywords}?lock=${lockSeed + i}`
+  ).join(",");
+}
+
 const properties = [
   {
     title: "Sunny Beachfront Villa",
@@ -37,7 +46,7 @@ const properties = [
     description:
       "A polished hotel suite in the heart of the financial district with a dedicated desk, fast WiFi, and 24-hour business center access.",
     amenities: "Fast WiFi,Work desk,Gym,Room service,Business center,Coffee maker",
-    images: img("chicago-suite", 4),
+    images: hotelImg("hotel,suite", 100, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.6,
@@ -82,7 +91,7 @@ const properties = [
     description:
       "A charming boutique hotel in a restored 19th-century building, blending old-world character with modern comfort for work or leisure.",
     amenities: "WiFi,Work desk,Gym,Breakfast included,Bar,Concierge",
-    images: img("boston-hotel", 4),
+    images: hotelImg("hotel,lobby", 110, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.5,
@@ -112,7 +121,7 @@ const properties = [
     description:
       "A high-rise hotel with skyline views, a full business center, meeting rooms, and quick access to the financial district.",
     amenities: "Fast WiFi,Work desk,Meeting rooms,Gym,Room service,City view",
-    images: img("nyc-hotel", 4),
+    images: hotelImg("hotel,skyline", 120, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.7,
@@ -172,7 +181,7 @@ const properties = [
     description:
       "A no-fuss, efficient hotel minutes from the airport with a business lounge, express checkout, and reliable WiFi for travelers between meetings.",
     amenities: "Fast WiFi,Work desk,Shuttle service,Gym,24-hour front desk",
-    images: img("dallas-hotel", 4),
+    images: hotelImg("hotel,airport", 130, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.3,
@@ -202,7 +211,7 @@ const properties = [
     description:
       "A bright king suite with floor-to-ceiling windows facing the Atlantic, a soaking tub, and a private balcony perfect for sunrise coffee.",
     amenities: "Ocean view,Balcony,King bed,Soaking tub,WiFi,Room service",
-    images: img("miami-oceanview-king", 4),
+    images: hotelImg("hotel,ocean,room", 140, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.8,
@@ -217,7 +226,7 @@ const properties = [
     description:
       "An efficient room built for work trips, with a dedicated desk, ergonomic chair, and blackout curtains for resetting between meetings.",
     amenities: "Work desk,Fast WiFi,Coffee maker,Ergonomic chair,Gym access",
-    images: img("denver-business-room", 4),
+    images: hotelImg("hotel,office,room", 150, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.5,
@@ -232,7 +241,7 @@ const properties = [
     description:
       "A wraparound corner suite with two walls of windows overlooking the skyline, a lounge area, and a well-lit desk for daytime work.",
     amenities: "City view,Work desk,Lounge area,Minibar,Fast WiFi",
-    images: img("toronto-skyline-corner", 4),
+    images: hotelImg("hotel,room,city", 160, 4),
     maxGuests: 3,
     bedrooms: 1,
     rating: 4.7,
@@ -247,7 +256,7 @@ const properties = [
     description:
       "A ground-floor room opening onto a private garden terrace, filled with morning light and the smell of jasmine in bloom.",
     amenities: "Private terrace,Garden view,WiFi,Coffee maker,Free parking",
-    images: img("charleston-garden-terrace", 4),
+    images: hotelImg("hotel,garden,room", 170, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.7,
@@ -262,7 +271,7 @@ const properties = [
     description:
       "Steps from the rooftop pool and bar, this suite has a plush king bed, a soaking tub, and floor-to-ceiling views of the Strip at night.",
     amenities: "Pool access,Strip view,King bed,Minibar,Room service",
-    images: img("vegas-rooftop-pool", 4),
+    images: hotelImg("hotel,pool,room", 180, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.6,
@@ -277,7 +286,7 @@ const properties = [
     description:
       "A warm, traditionally furnished room in a historic property, with antique details, soft lighting, and a queen bed dressed in linen.",
     amenities: "WiFi,Coffee maker,Breakfast included,Antique furnishings",
-    images: img("savannah-classic-queen", 4),
+    images: hotelImg("hotel,bedroom,classic", 190, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.5,
@@ -292,7 +301,7 @@ const properties = [
     description:
       "A tall-ceilinged loft-style suite with exposed brick, a spacious work lounge, and big windows looking out over downtown.",
     amenities: "Work desk,City view,Fast WiFi,Lounge area,Coffee maker",
-    images: img("philly-loft-suite", 4),
+    images: hotelImg("hotel,loft,room", 200, 4),
     maxGuests: 3,
     bedrooms: 1,
     rating: 4.6,
@@ -307,7 +316,7 @@ const properties = [
     description:
       "A calming retreat room with a deep soaking tub, candlelit ambiance, and red-rock desert views right outside the window.",
     amenities: "Soaking tub,Desert view,Spa access,WiFi,Free parking",
-    images: img("sedona-spa-retreat", 4),
+    images: hotelImg("hotel,spa,room", 210, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.9,
@@ -322,7 +331,7 @@ const properties = [
     description:
       "A playful two-room suite with a built-in bunk nook for the kids, a separate king bed for parents, and a TV in each room.",
     amenities: "Bunk beds,Two TVs,Mini fridge,WiFi,Pool access",
-    images: img("orlando-family-suite", 4),
+    images: hotelImg("hotel,family,room", 220, 4),
     maxGuests: 5,
     bedrooms: 2,
     rating: 4.7,
@@ -337,7 +346,7 @@ const properties = [
     description:
       "The top-floor suite, with a private dining area, a stocked bar cart, framed art, and sweeping views over the hills.",
     amenities: "Private dining,Bar cart,City view,Butler service,Fast WiFi",
-    images: img("beverlyhills-presidential", 4),
+    images: hotelImg("hotel,luxury,suite", 230, 4),
     maxGuests: 4,
     bedrooms: 2,
     rating: 5,
@@ -352,7 +361,7 @@ const properties = [
     description:
       "A compact, well-designed single room with a comfortable reading nook, a proper desk, and a big window over a quiet street.",
     amenities: "Work desk,WiFi,Coffee maker,Reading nook",
-    images: img("portland-cozy-single", 4),
+    images: hotelImg("hotel,room,cozy", 240, 4),
     maxGuests: 1,
     bedrooms: 1,
     rating: 4.4,
@@ -367,7 +376,7 @@ const properties = [
     description:
       "A double room just steps from the River Walk, with two queen beds and a small balcony overlooking the water.",
     amenities: "River view,Balcony,Two queen beds,WiFi,Free parking",
-    images: img("sanantonio-riverside-double", 4),
+    images: hotelImg("hotel,river,room", 250, 4),
     maxGuests: 4,
     bedrooms: 1,
     rating: 4.5,
@@ -382,7 +391,7 @@ const properties = [
     description:
       "A top-floor penthouse suite with a wraparound terrace, panoramic night views, and a lounge built for entertaining or unwinding.",
     amenities: "Terrace,Panoramic view,Lounge area,Minibar,Fast WiFi",
-    images: img("la-penthouse-suite", 4),
+    images: hotelImg("hotel,penthouse,room", 260, 4),
     maxGuests: 4,
     bedrooms: 2,
     rating: 4.8,
@@ -397,7 +406,7 @@ const properties = [
     description:
       "A character-filled room overlooking a quiet courtyard, with wrought-iron details, soft jazz drifting up from the street below.",
     amenities: "Courtyard view,WiFi,Coffee maker,Breakfast included",
-    images: img("neworleans-boutique-courtyard", 4),
+    images: hotelImg("hotel,courtyard,room", 270, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.6,
@@ -412,7 +421,7 @@ const properties = [
     description:
       "A practical, soundproofed room minutes from the terminal, built for a good night's sleep between flights or an early meeting.",
     amenities: "Soundproofed,Shuttle service,Fast WiFi,24-hour front desk",
-    images: img("atlanta-airport-layover", 4),
+    images: hotelImg("hotel,airport,room", 280, 4),
     maxGuests: 2,
     bedrooms: 1,
     rating: 4.3,
