@@ -21,7 +21,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           type="text"
           placeholder="City or country"
           defaultValue={q}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
       <div>
@@ -32,7 +32,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           id="purpose"
           name="purpose"
           defaultValue={purpose ?? ""}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="">Vacation or Work</option>
           <option value="VACATION">Vacation</option>
@@ -47,7 +47,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           id="type"
           name="type"
           defaultValue={type ?? ""}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="">Hotel or House</option>
           <option value="HOTEL">Hotel</option>
@@ -62,7 +62,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           id="maxPrice"
           name="maxPrice"
           defaultValue={maxPrice ?? ""}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="">Any price</option>
           <option value="100">Up to $100</option>
@@ -74,7 +74,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
       <div className="flex items-end lg:col-span-5">
         <button
           type="submit"
-          className="w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 sm:w-auto"
+          className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 sm:w-auto"
         >
           Search
         </button>

@@ -49,7 +49,7 @@ export default function BookingForm({
         </p>
         <Link
           href={`/login?next=/listings/${propertyId}`}
-          className="mt-4 block w-full rounded-lg bg-teal-600 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-teal-700"
+          className="mt-4 block w-full rounded-lg bg-blue-600 px-4 py-2 text-center text-sm font-semibold text-white transition hover:bg-blue-700"
         >
           Log in to book
         </Link>
@@ -80,7 +80,7 @@ export default function BookingForm({
             min={todayISO()}
             value={checkIn}
             onChange={(e) => setCheckIn(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
         <div>
@@ -95,7 +95,7 @@ export default function BookingForm({
             min={checkIn || todayISO()}
             value={checkOut}
             onChange={(e) => setCheckOut(e.target.value)}
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
       </div>
@@ -112,7 +112,7 @@ export default function BookingForm({
           max={maxGuests}
           defaultValue={1}
           required
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none focus:ring-1 focus:ring-teal-500"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <p className="mt-1 text-xs text-slate-500">Sleeps up to {maxGuests} guests.</p>
       </div>
@@ -135,7 +135,7 @@ export default function BookingForm({
       <button
         type="submit"
         disabled={pending}
-        className="mt-4 w-full rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:opacity-60"
+        className="mt-4 w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
       >
         {pending ? "Booking…" : "Book now & get key"}
       </button>

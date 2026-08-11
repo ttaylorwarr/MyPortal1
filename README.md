@@ -1,4 +1,4 @@
-# KeyStay
+# TroysSafes
 
 A vacation-rental marketplace: browse hotels and houses to rent for **vacation or work**,
 see the price and pictures, book a stay, and get a **digital key** on your account.

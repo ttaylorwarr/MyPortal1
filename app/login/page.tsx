@@ -22,7 +22,7 @@ export default async function LoginPage({
       </div>
       <p className="mt-4 text-center text-sm text-slate-600">
         Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-semibold text-teal-700 hover:underline">
+        <Link href="/signup" className="font-semibold text-blue-700 hover:underline">
           Sign up
         </Link>
       </p>
