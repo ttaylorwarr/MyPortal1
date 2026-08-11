@@ -24,6 +24,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json(jsonResponse);
   } catch (error) {
+    console.error("Blob upload token error:", error);
     return NextResponse.json(
       { error: error instanceof Error ? error.message : "Upload failed" },
       { status: 400 }
