@@ -17,19 +17,33 @@ see the price and pictures, book a stay, and get a **digital key** on your accou
 ## Tech stack
 
 - [Next.js](https://nextjs.org) (App Router) + TypeScript + Tailwind CSS
-- [Prisma](https://www.prisma.io) with SQLite for storage
+- [Prisma](https://www.prisma.io) with Postgres for storage (works with Neon,
+  Supabase, or any Postgres provider)
 - Cookie-based sessions (`jose` for signed JWTs, `bcryptjs` for password hashing)
 
 ## Getting started
 
+1. Copy `.env.example` to `.env` and fill in `DATABASE_URL` (a Postgres
+   connection string) and `SESSION_SECRET` (`openssl rand -hex 32`).
+2. Install dependencies and set up the database:
+
 ```bash
 npm install
-npx prisma migrate dev   # creates the local SQLite database
-npx prisma db seed       # loads sample listings
+npx prisma migrate dev   # applies migrations to your database
+npm run db:seed          # loads sample listings
 npm run dev
 ```
 
 Then open [http://localhost:3000](http://localhost:3000).
+
+## Deploying
+
+`npm run build` runs `prisma migrate deploy` before `next build`, so pushing
+to a platform like Vercel automatically applies pending migrations as long as
+`DATABASE_URL` and `SESSION_SECRET` are set as environment variables on the
+project. Run `npm run db:seed` once (locally, pointed at the production
+database) to load sample listings — it isn't run automatically on every
+build since it clears and reloads the `Property` table.
 
 ## Project structure
 
