@@ -1,12 +1,42 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { upload } from "@vercel/blob/client";
 
 type ImageUploaderProps = {
   name: string;
   defaultImages: string;
 };
+
+async function uploadFile(file: File, timeoutMs: number): Promise<string> {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), timeoutMs);
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
+      signal: controller.signal,
+    });
+
+    const result = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+      throw new Error(result.error || `Upload failed (${response.status})`);
+    }
+
+    return result.url as string;
+  } catch (err) {
+    if (err instanceof Error && err.name === "AbortError") {
+      throw new Error(`Uploading "${file.name}" timed out. Check your connection and try again.`);
+    }
+    throw err;
+  } finally {
+    clearTimeout(timer);
+  }
+}
 
 export default function ImageUploader({ name, defaultImages }: ImageUploaderProps) {
   const [images, setImages] = useState<string[]>(
@@ -16,25 +46,6 @@ export default function ImageUploader({ name, defaultImages }: ImageUploaderProp
   const [statusText, setStatusText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
-    return new Promise((resolve, reject) => {
-      const timer = setTimeout(
-        () => reject(new Error(`Uploading "${label}" timed out. Check your connection and try again.`)),
-        ms
-      );
-      promise.then(
-        (value) => {
-          clearTimeout(timer);
-          resolve(value);
-        },
-        (err) => {
-          clearTimeout(timer);
-          reject(err);
-        }
-      );
-    });
-  }
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
@@ -47,15 +58,8 @@ export default function ImageUploader({ name, defaultImages }: ImageUploaderProp
     for (const file of fileList) {
       setStatusText(`Uploading ${file.name}…`);
       try {
-        const blob = await withTimeout(
-          upload(file.name, file, {
-            access: "public",
-            handleUploadUrl: "/api/upload",
-          }),
-          60_000,
-          file.name
-        );
-        uploaded.push(blob.url);
+        const url = await uploadFile(file, 60_000);
+        uploaded.push(url);
       } catch (err) {
         setError(err instanceof Error ? err.message : `Failed to upload ${file.name}`);
         break;
