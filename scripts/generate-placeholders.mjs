@@ -19,6 +19,23 @@ const themes = [
   { slug: "keywest-bungalow", colors: ["#059669", "#34d399"], icons: ["🌴", "🌺", "🏝️", "🚲"] },
   { slug: "dallas-hotel", colors: ["#1e40af", "#3b82f6"], icons: ["✈️", "🛏️", "🚕", "🏢"] },
   { slug: "napa-house", colors: ["#7f1d1d", "#b91c1c"], icons: ["🍇", "🍷", "🏡", "🌄"] },
+
+  // Hotel room interiors
+  { slug: "miami-oceanview-king", colors: ["#0369a1", "#38bdf8"], icons: ["🛏️", "🌊", "🥂", "🛁"] },
+  { slug: "denver-business-room", colors: ["#334155", "#64748b"], icons: ["💼", "🖥️", "☕", "🛏️"] },
+  { slug: "toronto-skyline-corner", colors: ["#312e81", "#6366f1"], icons: ["🌇", "🛏️", "🍾", "🪟"] },
+  { slug: "charleston-garden-terrace", colors: ["#166534", "#4ade80"], icons: ["🌿", "🛏️", "☕", "🪴"] },
+  { slug: "vegas-rooftop-pool", colors: ["#a21caf", "#e879f9"], icons: ["🏊", "🛏️", "🍹", "🌆"] },
+  { slug: "savannah-classic-queen", colors: ["#78350f", "#d97706"], icons: ["🛏️", "🕯️", "🖼️", "☕"] },
+  { slug: "philly-loft-suite", colors: ["#1e3a8a", "#3b82f6"], icons: ["🏙️", "🛏️", "🛋️", "🪟"] },
+  { slug: "sedona-spa-retreat", colors: ["#9a3412", "#fb923c"], icons: ["🧖", "🛁", "🕯️", "🌸"] },
+  { slug: "orlando-family-suite", colors: ["#0891b2", "#67e8f9"], icons: ["🧸", "🛏️", "📺", "🎈"] },
+  { slug: "beverlyhills-presidential", colors: ["#713f12", "#eab308"], icons: ["👑", "🛏️", "🥂", "🖼️"] },
+  { slug: "portland-cozy-single", colors: ["#065f46", "#34d399"], icons: ["🛏️", "☕", "📚", "🪟"] },
+  { slug: "sanantonio-riverside-double", colors: ["#0e7490", "#22d3ee"], icons: ["🌊", "🛏️", "🛶", "☕"] },
+  { slug: "la-penthouse-suite", colors: ["#581c87", "#a855f7"], icons: ["🏙️", "🛏️", "🥂", "🌃"] },
+  { slug: "neworleans-boutique-courtyard", colors: ["#7c2d12", "#f97316"], icons: ["🎷", "🛏️", "🪴", "🕯️"] },
+  { slug: "atlanta-airport-layover", colors: ["#1e40af", "#60a5fa"], icons: ["✈️", "🛏️", "🛌", "☕"] },
 ];
 
 function svg({ colors, icon, label }) {
