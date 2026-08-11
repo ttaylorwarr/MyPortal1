@@ -2,6 +2,7 @@
 
 import { useActionState } from "react";
 import type { PropertyFormState } from "@/app/actions/admin";
+import ImageUploader from "./ImageUploader";
 
 type PropertyDefaults = {
   id?: string;
@@ -236,22 +237,10 @@ export default function PropertyForm({ action, defaults, submitLabel }: Property
       </div>
 
       <div>
-        <label htmlFor="images" className="block text-sm font-medium text-slate-700">
-          Image paths / URLs
-        </label>
-        <input
-          id="images"
-          name="images"
-          type="text"
-          required
-          placeholder="/images/malibu-villa-1.svg, /images/malibu-villa-2.svg"
-          defaultValue={values.images}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
-        <p className="mt-1 text-xs text-slate-500">
-          Comma-separated. Use local paths under /public/images, or an external URL whose domain
-          is already allowed in next.config.ts.
-        </p>
+        <label className="block text-sm font-medium text-slate-700">Photos</label>
+        <div className="mt-1">
+          <ImageUploader name="images" defaultImages={values.images} />
+        </div>
       </div>
 
       {state?.error && (
