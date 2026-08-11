@@ -13,30 +13,61 @@ export default function ImageUploader({ name, defaultImages }: ImageUploaderProp
     defaultImages ? defaultImages.split(",").filter(Boolean) : []
   );
   const [uploading, setUploading] = useState(false);
+  const [statusText, setStatusText] = useState("");
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise<T> {
+    return new Promise((resolve, reject) => {
+      const timer = setTimeout(
+        () => reject(new Error(`Uploading "${label}" timed out. Check your connection and try again.`)),
+        ms
+      );
+      promise.then(
+        (value) => {
+          clearTimeout(timer);
+          resolve(value);
+        },
+        (err) => {
+          clearTimeout(timer);
+          reject(err);
+        }
+      );
+    });
+  }
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
     setUploading(true);
     setError(null);
 
-    try {
-      const uploaded: string[] = [];
-      for (const file of Array.from(files)) {
-        const blob = await upload(file.name, file, {
-          access: "public",
-          handleUploadUrl: "/api/upload",
-        });
+    const fileList = Array.from(files);
+    const uploaded: string[] = [];
+
+    for (const file of fileList) {
+      setStatusText(`Uploading ${file.name}…`);
+      try {
+        const blob = await withTimeout(
+          upload(file.name, file, {
+            access: "public",
+            handleUploadUrl: "/api/upload",
+          }),
+          60_000,
+          file.name
+        );
         uploaded.push(blob.url);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : `Failed to upload ${file.name}`);
+        break;
       }
-      setImages((prev) => [...prev, ...uploaded]);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Upload failed");
-    } finally {
-      setUploading(false);
-      if (fileInputRef.current) fileInputRef.current.value = "";
     }
+
+    if (uploaded.length > 0) {
+      setImages((prev) => [...prev, ...uploaded]);
+    }
+    setUploading(false);
+    setStatusText("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
   }
 
   function removeImage(url: string) {
@@ -78,7 +109,7 @@ export default function ImageUploader({ name, defaultImages }: ImageUploaderProp
       )}
 
       <label className="flex w-full cursor-pointer items-center justify-center rounded-lg border-2 border-dashed border-slate-300 px-4 py-4 text-center text-sm font-medium text-slate-600 transition hover:border-blue-400 hover:text-blue-700">
-        {uploading ? "Uploading…" : "Upload photos from your phone or computer"}
+        {uploading ? statusText || "Uploading…" : "Upload photos from your phone or computer"}
         <input
           ref={fileInputRef}
           type="file"

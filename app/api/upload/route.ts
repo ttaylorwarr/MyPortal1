@@ -15,9 +15,16 @@ export async function POST(request: Request) {
       body,
       request,
       onBeforeGenerateToken: async () => ({
-        allowedContentTypes: ["image/jpeg", "image/png", "image/webp", "image/gif"],
+        allowedContentTypes: [
+          "image/jpeg",
+          "image/png",
+          "image/webp",
+          "image/gif",
+          "image/heic",
+          "image/heif",
+        ],
         addRandomSuffix: true,
-        maximumSizeInBytes: 10 * 1024 * 1024, // 10MB
+        maximumSizeInBytes: 20 * 1024 * 1024, // 20MB, phone camera photos can be large
       }),
       onUploadCompleted: async () => {},
     });
