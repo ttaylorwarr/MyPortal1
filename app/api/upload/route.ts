@@ -1,6 +1,17 @@
 import { NextResponse } from "next/server";
-import { handleUpload, type HandleUploadBody } from "@vercel/blob/client";
+import { put } from "@vercel/blob";
 import { getCurrentUser } from "@/lib/auth";
+
+export const maxDuration = 60;
+
+const ALLOWED_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+  "image/heic",
+  "image/heif",
+];
 
 export async function POST(request: Request) {
   const user = await getCurrentUser();
@@ -8,33 +19,48 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not authorized" }, { status: 403 });
   }
 
-  const body = (await request.json()) as HandleUploadBody;
+  let formData: FormData;
+  try {
+    formData = await request.formData();
+  } catch {
+    return NextResponse.json({ error: "Invalid upload request" }, { status: 400 });
+  }
+
+  const file = formData.get("file");
+  if (!(file instanceof File)) {
+    return NextResponse.json({ error: "No file provided" }, { status: 400 });
+  }
+
+  if (file.type && !ALLOWED_TYPES.includes(file.type)) {
+    return NextResponse.json({ error: `Unsupported file type: ${file.type}` }, { status: 400 });
+  }
+
+  if (file.size > 20 * 1024 * 1024) {
+    return NextResponse.json({ error: "File is larger than 20MB" }, { status: 400 });
+  }
+
+  console.log(`Blob upload starting: ${file.name} (${file.size} bytes, ${file.type})`);
 
   try {
-    const jsonResponse = await handleUpload({
-      body,
-      request,
-      onBeforeGenerateToken: async () => ({
-        allowedContentTypes: [
-          "image/jpeg",
-          "image/png",
-          "image/webp",
-          "image/gif",
-          "image/heic",
-          "image/heif",
-        ],
-        addRandomSuffix: true,
-        maximumSizeInBytes: 20 * 1024 * 1024, // 20MB, phone camera photos can be large
-      }),
-      onUploadCompleted: async () => {},
+    const blob = await put(file.name, file, {
+      access: "public",
+      addRandomSuffix: true,
+      abortSignal: AbortSignal.timeout(45_000),
     });
-
-    return NextResponse.json(jsonResponse);
+    console.log(`Blob upload finished: ${blob.url}`);
+    return NextResponse.json(blob);
   } catch (error) {
-    console.error("Blob upload token error:", error);
+    console.error("Blob upload error:", error);
+    const timedOut = error instanceof Error && error.name === "TimeoutError";
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : "Upload failed" },
-      { status: 400 }
+      {
+        error: timedOut
+          ? "Upload to storage timed out. Try a smaller photo or check your connection."
+          : error instanceof Error
+            ? error.message
+            : "Upload failed",
+      },
+      { status: timedOut ? 504 : 500 }
     );
   }
 }
