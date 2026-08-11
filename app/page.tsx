@@ -45,7 +45,7 @@ export default async function Home({
 
   return (
     <div className="flex flex-1 flex-col">
-      <section className="border-b border-slate-200 bg-gradient-to-b from-teal-50 to-white">
+      <section className="border-b border-slate-200 bg-gradient-to-b from-blue-50 to-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
             Rent a hotel or house for vacation or work

@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "KeyStay — Rent hotels & houses for vacation or work",
+  title: "TroysSafes — Rent hotels & houses for vacation or work",
   description:
     "Browse hotels and houses to rent for vacation or work. See prices and pictures, book your stay, and get your digital key on your account.",
 };

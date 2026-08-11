@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/db";
@@ -54,10 +55,17 @@ export async function getCurrentUser() {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true, createdAt: true },
+      select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
     });
     return user;
   } catch {
     return null;
   }
+}
+
+export async function requireAdmin() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin");
+  if (!user.isAdmin) redirect("/");
+  return user;
 }

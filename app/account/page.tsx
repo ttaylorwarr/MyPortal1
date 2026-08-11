@@ -28,7 +28,7 @@ export default async function AccountPage({
       </p>
 
       {booked && (
-        <div className="mt-6 rounded-xl border border-teal-300 bg-teal-50 px-4 py-3 text-sm font-medium text-teal-800">
+        <div className="mt-6 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
           Booking confirmed! Your digital key is ready below.
         </div>
       )}
@@ -40,7 +40,7 @@ export default async function AccountPage({
           <p>You haven&apos;t booked a stay yet.</p>
           <Link
             href="/"
-            className="mt-3 inline-block rounded-lg bg-teal-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-700"
+            className="mt-3 inline-block rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
           >
             Browse stays
           </Link>
@@ -54,7 +54,7 @@ export default async function AccountPage({
                 key={booking.id}
                 className={`flex flex-col gap-4 rounded-2xl border p-4 shadow-sm sm:flex-row ${
                   booking.id === booked
-                    ? "border-teal-400 bg-teal-50/40"
+                    ? "border-blue-400 bg-blue-50/40"
                     : "border-slate-200 bg-white"
                 }`}
               >
@@ -71,7 +71,7 @@ export default async function AccountPage({
                   <div>
                     <Link
                       href={`/listings/${booking.property.id}`}
-                      className="font-semibold text-slate-900 hover:text-teal-700"
+                      className="font-semibold text-slate-900 hover:text-blue-700"
                     >
                       {booking.property.title}
                     </Link>

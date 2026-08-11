@@ -49,13 +49,13 @@ export default function PropertyCard({
         <span className="absolute left-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-xs font-semibold text-slate-700 shadow-sm">
           {type === "HOTEL" ? "Hotel" : "House"}
         </span>
-        <span className="absolute right-3 top-3 rounded-full bg-teal-600/95 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
+        <span className="absolute right-3 top-3 rounded-full bg-blue-600/95 px-2.5 py-1 text-xs font-semibold text-white shadow-sm">
           {purposeLabel[purpose] ?? purpose}
         </span>
       </div>
       <div className="flex flex-1 flex-col gap-1 p-4">
         <div className="flex items-start justify-between gap-2">
-          <h3 className="font-semibold text-slate-900 group-hover:text-teal-700">{title}</h3>
+          <h3 className="font-semibold text-slate-900 group-hover:text-blue-700">{title}</h3>
           <span className="flex shrink-0 items-center gap-1 text-sm text-slate-600">
             ★ {rating.toFixed(1)}
           </span>

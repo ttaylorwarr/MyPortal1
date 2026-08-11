@@ -18,7 +18,7 @@ export default async function SignupPage() {
       </div>
       <p className="mt-4 text-center text-sm text-slate-600">
         Already have an account?{" "}
-        <Link href="/login" className="font-semibold text-teal-700 hover:underline">
+        <Link href="/login" className="font-semibold text-blue-700 hover:underline">
           Log in
         </Link>
       </p>

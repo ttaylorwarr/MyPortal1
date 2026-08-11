@@ -77,7 +77,7 @@ export default async function ListingPage({
           <ul className="mt-2 grid grid-cols-2 gap-2 text-sm text-slate-700 sm:grid-cols-3">
             {amenities.map((amenity) => (
               <li key={amenity} className="flex items-center gap-2">
-                <span className="text-teal-600">✓</span> {amenity}
+                <span className="text-blue-600">✓</span> {amenity}
               </li>
             ))}
           </ul>
