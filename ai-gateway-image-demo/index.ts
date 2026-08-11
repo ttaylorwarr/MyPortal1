@@ -1,6 +1,8 @@
 import { generateText } from "ai";
 import fs from "node:fs";
-import "dotenv/config";
+import { config } from "dotenv";
+
+config({ path: ".env.local" });
 
 async function main() {
   const prompt =
