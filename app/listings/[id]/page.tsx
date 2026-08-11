@@ -36,9 +36,16 @@ export default async function ListingPage({
             &middot; {purposeLabel[property.purpose]}
           </p>
         </div>
-        <span className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700">
-          ★ {property.rating.toFixed(1)}
-        </span>
+        <div className="flex items-center gap-2">
+          {!property.isAvailable && (
+            <span className="rounded-full bg-slate-200 px-3 py-1.5 text-sm font-semibold text-slate-600">
+              Unavailable
+            </span>
+          )}
+          <span className="flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-sm font-semibold text-slate-700">
+            ★ {property.rating.toFixed(1)}
+          </span>
+        </div>
       </div>
 
       <div className="mt-6 grid grid-cols-2 gap-2 overflow-hidden rounded-2xl sm:grid-cols-4 sm:grid-rows-2">
@@ -90,6 +97,7 @@ export default async function ListingPage({
               pricePerNight={property.pricePerNight}
               maxGuests={property.maxGuests}
               isLoggedIn={Boolean(user)}
+              isAvailable={property.isAvailable}
             />
           </div>
         </div>

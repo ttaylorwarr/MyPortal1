@@ -17,6 +17,7 @@ type PropertyDefaults = {
   maxGuests: number;
   bedrooms: number;
   rating: number;
+  isAvailable: boolean;
 };
 
 type PropertyFormProps = {
@@ -38,6 +39,7 @@ const emptyDefaults: PropertyDefaults = {
   maxGuests: 2,
   bedrooms: 1,
   rating: 4.5,
+  isAvailable: true,
 };
 
 export default function PropertyForm({ action, defaults, submitLabel }: PropertyFormProps) {
@@ -186,6 +188,21 @@ export default function PropertyForm({ action, defaults, submitLabel }: Property
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
+      </div>
+
+      <div>
+        <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+          <input
+            type="checkbox"
+            name="isAvailable"
+            defaultChecked={values.isAvailable}
+            className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+          />
+          Available for booking
+        </label>
+        <p className="mt-1 text-xs text-slate-500">
+          Unchecking this hides the listing from search and blocks new bookings.
+        </p>
       </div>
 
       <div>

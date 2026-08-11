@@ -52,6 +52,10 @@ export async function createBookingAction(
     return { error: "This property no longer exists." };
   }
 
+  if (!property.isAvailable) {
+    return { error: "This stay isn't available for booking right now." };
+  }
+
   if (guests > property.maxGuests) {
     return { error: `This stay sleeps up to ${property.maxGuests} guests.` };
   }

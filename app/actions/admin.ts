@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 
 export type PropertyFormState = { error?: string } | undefined;
 
@@ -40,6 +40,7 @@ const propertySchema = z.object({
   maxGuests: z.coerce.number().int().min(1, "At least 1 guest"),
   bedrooms: z.coerce.number().int().min(0, "Bedrooms can't be negative"),
   rating: z.coerce.number().min(0).max(5, "Rating must be between 0 and 5"),
+  isAvailable: z.coerce.boolean(),
 });
 
 function parsePropertyForm(formData: FormData) {
@@ -56,6 +57,7 @@ function parsePropertyForm(formData: FormData) {
     maxGuests: formData.get("maxGuests"),
     bedrooms: formData.get("bedrooms"),
     rating: formData.get("rating"),
+    isAvailable: formData.get("isAvailable") === "on",
   });
 }
 
@@ -63,7 +65,7 @@ export async function createPropertyAction(
   _prevState: PropertyFormState,
   formData: FormData
 ): Promise<PropertyFormState> {
-  await requireAdmin();
+  await requireStaff();
 
   const parsed = parsePropertyForm(formData);
   if (!parsed.success) {
@@ -78,7 +80,7 @@ export async function updatePropertyAction(
   _prevState: PropertyFormState,
   formData: FormData
 ): Promise<PropertyFormState> {
-  await requireAdmin();
+  await requireStaff();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) {
@@ -95,7 +97,7 @@ export async function updatePropertyAction(
 }
 
 export async function deletePropertyAction(formData: FormData) {
-  await requireAdmin();
+  await requireStaff();
 
   const id = formData.get("id");
   if (typeof id !== "string" || !id) {
@@ -105,4 +107,25 @@ export async function deletePropertyAction(formData: FormData) {
   await prisma.booking.deleteMany({ where: { propertyId: id } });
   await prisma.property.delete({ where: { id } });
   redirect("/admin/listings?deleted=1");
+}
+
+export async function togglePropertyAvailabilityAction(formData: FormData) {
+  await requireStaff();
+
+  const id = formData.get("id");
+  if (typeof id !== "string" || !id) {
+    return;
+  }
+
+  const property = await prisma.property.findUnique({
+    where: { id },
+    select: { isAvailable: true },
+  });
+  if (!property) return;
+
+  await prisma.property.update({
+    where: { id },
+    data: { isAvailable: !property.isAvailable },
+  });
+  redirect("/admin/listings");
 }

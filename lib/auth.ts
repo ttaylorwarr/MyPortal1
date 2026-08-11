@@ -55,7 +55,7 @@ export async function getCurrentUser() {
 
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { id: true, name: true, email: true, isAdmin: true, createdAt: true },
+      select: { id: true, name: true, email: true, role: true, createdAt: true },
     });
     return user;
   } catch {
@@ -63,9 +63,18 @@ export async function getCurrentUser() {
   }
 }
 
+/** ADMIN or MANAGER: allowed into the admin area to manage listings and bookings. */
+export async function requireStaff() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/admin");
+  if (user.role !== "ADMIN" && user.role !== "MANAGER") redirect("/");
+  return user;
+}
+
+/** ADMIN only: allowed to manage user accounts. */
 export async function requireAdmin() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?next=/admin");
-  if (!user.isAdmin) redirect("/");
+  if (user.role !== "ADMIN") redirect("/admin");
   return user;
 }

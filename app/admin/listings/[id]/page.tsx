@@ -46,6 +46,7 @@ export default async function EditListingPage({
             maxGuests: property.maxGuests,
             bedrooms: property.bedrooms,
             rating: property.rating,
+            isAvailable: property.isAvailable,
           }}
         />
       </div>

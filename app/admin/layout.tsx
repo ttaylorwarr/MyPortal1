@@ -1,12 +1,12 @@
 import Link from "next/link";
-import { requireAdmin } from "@/lib/auth";
+import { requireStaff } from "@/lib/auth";
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  await requireAdmin();
+  const user = await requireStaff();
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
@@ -22,6 +22,11 @@ export default async function AdminLayout({
           <Link href="/admin/bookings" className="hover:text-blue-700">
             Bookings
           </Link>
+          {user.role === "ADMIN" && (
+            <Link href="/admin/users" className="hover:text-blue-700">
+              Users
+            </Link>
+          )}
           <Link href="/" className="hover:text-blue-700">
             Back to site
           </Link>
