@@ -18,7 +18,7 @@ export default async function Home({
   const params = await searchParams;
   const { q, purpose, type, maxPrice } = params;
 
-  const where: Prisma.PropertyWhereInput = {};
+  const where: Prisma.PropertyWhereInput = { isAvailable: true };
 
   if (q) {
     where.OR = [

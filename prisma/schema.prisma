@@ -21,12 +21,18 @@ enum PropertyPurpose {
   BOTH
 }
 
+enum Role {
+  ADMIN
+  MANAGER
+  MEMBER
+}
+
 model User {
   id           String    @id @default(cuid())
   name         String
   email        String    @unique
   passwordHash String
-  isAdmin      Boolean   @default(false)
+  role         Role      @default(MEMBER)
   createdAt    DateTime  @default(now())
   bookings     Booking[]
 }
@@ -45,6 +51,7 @@ model Property {
   maxGuests   Int             @default(2)
   bedrooms    Int             @default(1)
   rating      Float           @default(4.5)
+  isAvailable Boolean         @default(true)
   createdAt   DateTime        @default(now())
   bookings    Booking[]
 }

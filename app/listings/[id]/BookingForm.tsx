@@ -10,6 +10,7 @@ type BookingFormProps = {
   pricePerNight: number;
   maxGuests: number;
   isLoggedIn: boolean;
+  isAvailable: boolean;
 };
 
 function todayISO() {
@@ -21,6 +22,7 @@ export default function BookingForm({
   pricePerNight,
   maxGuests,
   isLoggedIn,
+  isAvailable,
 }: BookingFormProps) {
   const [state, formAction, pending] = useActionState<BookingFormState, FormData>(
     createBookingAction,
@@ -37,6 +39,26 @@ export default function BookingForm({
   }, [checkIn, checkOut]);
 
   const total = nights * pricePerNight;
+
+  if (!isAvailable) {
+    return (
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+        <p className="text-lg font-bold text-slate-900">
+          {formatPrice(pricePerNight)} <span className="text-sm font-normal text-slate-500">/ night</span>
+        </p>
+        <p className="mt-3 text-sm text-slate-600">
+          This stay isn&apos;t available for booking right now.
+        </p>
+        <button
+          type="button"
+          disabled
+          className="mt-4 w-full cursor-not-allowed rounded-lg bg-slate-200 px-4 py-2 text-center text-sm font-semibold text-slate-500"
+        >
+          Not available
+        </button>
+      </div>
+    );
+  }
 
   if (!isLoggedIn) {
     return (
