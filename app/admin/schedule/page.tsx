@@ -38,7 +38,9 @@ export default async function AdminSchedulePage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-lg font-bold text-slate-900">Schedule — {formatMonthLabel(monthStart)}</h2>
+        <h2 className="text-lg font-bold text-slate-900">
+          Manager Schedule — {formatMonthLabel(monthStart)}
+        </h2>
         <div className="flex gap-2 text-sm font-medium">
           <a
             href={`/admin/schedule?month=${monthOffset - 1}`}
@@ -72,7 +74,7 @@ export default async function AdminSchedulePage({
         </div>
       )}
 
-      <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="mt-6">
         <ShiftForm
           staff={staff}
           minDate={toDateInputValue(monthStart)}
