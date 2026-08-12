@@ -25,20 +25,43 @@ enum Role {
   ADMIN
   MANAGER
   MEMBER
+  EMPLOYEE
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String           @id @default(cuid())
   firstName     String
   lastName      String
-  username      String    @unique
-  email         String    @unique
+  username      String           @unique
+  email         String           @unique
   passwordHash  String?
-  role          Role      @default(MEMBER)
+  role          Role             @default(MEMBER)
   hourlyPayRate Float?
-  safeCode      String?   @unique
-  createdAt     DateTime  @default(now())
+  safeCode      String?          @unique
+  createdAt     DateTime         @default(now())
   bookings      Booking[]
+  shifts        Shift[]
+  timeEntries   TimeClockEntry[]
+}
+
+model Shift {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  date      DateTime
+  startTime String
+  endTime   String
+  createdAt DateTime @default(now())
+}
+
+model TimeClockEntry {
+  id            String    @id @default(cuid())
+  user          User      @relation(fields: [userId], references: [id])
+  userId        String
+  clockIn       DateTime
+  clockOut      DateTime?
+  needsApproval Boolean   @default(false)
+  createdAt     DateTime  @default(now())
 }
 
 model Property {

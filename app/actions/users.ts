@@ -7,8 +7,8 @@ import { requireAdmin } from "@/lib/auth";
 
 export type UserFormState = { error?: string } | undefined;
 
-const roleSchema = z.enum(["ADMIN", "MANAGER", "MEMBER"]);
-const hireRoleSchema = z.enum(["MANAGER", "MEMBER"]);
+const roleSchema = z.enum(["ADMIN", "MANAGER", "MEMBER", "EMPLOYEE"]);
+const hireRoleSchema = z.enum(["MANAGER", "MEMBER", "EMPLOYEE"]);
 
 const usernameSchema = z
   .string()

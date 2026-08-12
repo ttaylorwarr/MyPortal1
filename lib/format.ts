@@ -13,3 +13,26 @@ export function formatDate(date: Date) {
     year: "numeric",
   }).format(date);
 }
+
+export function formatTime(date: Date) {
+  return new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(date);
+}
+
+export function formatDateTime(date: Date) {
+  return `${formatDate(date)}, ${formatTime(date)}`;
+}
+
+export function toDateTimeLocalValue(date: Date) {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function formatDuration(ms: number) {
+  const totalMinutes = Math.max(0, Math.round(ms / 60000));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return `${hours}h ${minutes}m`;
+}

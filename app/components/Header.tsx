@@ -21,6 +21,11 @@ export default async function Header() {
               <Link href="/account" className="hover:text-blue-700">
                 My account
               </Link>
+              {(user.role === "ADMIN" || user.role === "MANAGER" || user.role === "EMPLOYEE") && (
+                <Link href="/employee" className="hover:text-blue-700">
+                  Employee
+                </Link>
+              )}
               {(user.role === "ADMIN" || user.role === "MANAGER") && (
                 <Link href="/admin" className="hover:text-blue-700">
                   Admin

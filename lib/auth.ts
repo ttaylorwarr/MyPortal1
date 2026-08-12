@@ -86,3 +86,11 @@ export async function requireAdmin() {
   if (user.role !== "ADMIN") redirect("/admin");
   return user;
 }
+
+/** ADMIN, MANAGER, or EMPLOYEE: allowed into the employee area (schedule, time clock, timesheet, bookings). */
+export async function requireEmployeeArea() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login?next=/employee");
+  if (user.role !== "ADMIN" && user.role !== "MANAGER" && user.role !== "EMPLOYEE") redirect("/");
+  return user;
+}
