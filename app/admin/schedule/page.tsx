@@ -1,25 +1,28 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getWeekStart, getWeekDays, toDateInputValue, formatWeekRange } from "@/lib/week";
+import { toDateInputValue } from "@/lib/week";
+import { getMonthStart, getMonthGridWeeks, formatMonthLabel } from "@/lib/month";
 import ScheduleCalendar from "@/app/components/ScheduleCalendar";
 import ShiftForm from "./ShiftForm";
 
 export default async function AdminSchedulePage({
   searchParams,
 }: {
-  searchParams: Promise<{ week?: string; saved?: string; deleted?: string }>;
+  searchParams: Promise<{ month?: string; saved?: string; deleted?: string }>;
 }) {
-  const [, { week, saved, deleted }] = await Promise.all([requireAdmin(), searchParams]);
+  const [, { month, saved, deleted }] = await Promise.all([requireAdmin(), searchParams]);
 
-  const weekOffset = week ? Number(week) : 0;
-  const weekStart = getWeekStart(new Date(), Number.isFinite(weekOffset) ? weekOffset : 0);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 7);
-  const days = getWeekDays(weekStart);
+  const monthOffset = month ? Number(month) : 0;
+  const monthStart = getMonthStart(new Date(), Number.isFinite(monthOffset) ? monthOffset : 0);
+  const weeks = getMonthGridWeeks(monthStart);
+  const rangeStart = weeks[0][0];
+  const rangeEnd = new Date(weeks[weeks.length - 1][6]);
+  rangeEnd.setDate(rangeEnd.getDate() + 1);
+  const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
 
   const [shifts, staff] = await Promise.all([
     prisma.shift.findMany({
-      where: { date: { gte: weekStart, lt: weekEnd } },
+      where: { date: { gte: rangeStart, lt: rangeEnd } },
       include: { user: true },
       orderBy: [{ date: "asc" }, { startTime: "asc" }],
     }),
@@ -30,31 +33,30 @@ export default async function AdminSchedulePage({
     }),
   ]);
 
-  const currentPath = `/admin/schedule${weekOffset ? `?week=${weekOffset}` : ""}`;
-  const dayFmt = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" });
+  const currentPath = `/admin/schedule${monthOffset ? `?month=${monthOffset}` : ""}`;
 
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-lg font-bold text-slate-900">Schedule — {formatWeekRange(weekStart)}</h2>
+        <h2 className="text-lg font-bold text-slate-900">Schedule — {formatMonthLabel(monthStart)}</h2>
         <div className="flex gap-2 text-sm font-medium">
           <a
-            href={`/admin/schedule?week=${weekOffset - 1}`}
+            href={`/admin/schedule?month=${monthOffset - 1}`}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            &larr; Prev week
+            &larr; Prev
           </a>
           <a
             href="/admin/schedule"
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            This week
+            This month
           </a>
           <a
-            href={`/admin/schedule?week=${weekOffset + 1}`}
+            href={`/admin/schedule?month=${monthOffset + 1}`}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            Next week &rarr;
+            Next &rarr;
           </a>
         </div>
       </div>
@@ -72,14 +74,22 @@ export default async function AdminSchedulePage({
 
       <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
         <ShiftForm
-          weekDays={days.map((d) => ({ value: toDateInputValue(d), label: dayFmt.format(d) }))}
           staff={staff}
+          minDate={toDateInputValue(monthStart)}
+          maxDate={toDateInputValue(monthEnd)}
           returnTo={currentPath}
         />
       </div>
 
       <div className="mt-6">
-        <ScheduleCalendar days={days} shifts={shifts} showNames editable returnTo={currentPath} />
+        <ScheduleCalendar
+          weeks={weeks}
+          monthIndex={monthStart.getMonth()}
+          shifts={shifts}
+          showNames
+          editable
+          returnTo={currentPath}
+        />
       </div>
     </div>
   );
