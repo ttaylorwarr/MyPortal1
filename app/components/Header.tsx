@@ -10,10 +10,12 @@ export default async function Header() {
   return (
     <header className="sticky top-0 z-20 border-b border-slate-200 bg-white/90 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-        <Link href="/" className="flex items-center">
-          <Image src="/logo.svg" alt="TroysSafes" width={170} height={41} priority />
-        </Link>
-        <MobileMenu user={user ? { firstName: user.firstName, role: user.role } : null} />
+        <div className="flex items-center gap-3">
+          <MobileMenu user={user ? { firstName: user.firstName, role: user.role } : null} />
+          <Link href="/" className="flex items-center">
+            <Image src="/logo.svg" alt="TroysSafes" width={170} height={41} priority />
+          </Link>
+        </div>
         <nav className="hidden items-center gap-4 text-sm font-medium text-slate-700 sm:flex">
           <Link href="/" className="hover:text-blue-700">
             Home
