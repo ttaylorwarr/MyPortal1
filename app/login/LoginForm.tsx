@@ -13,8 +13,8 @@ export default function LoginForm({ next }: { next?: string }) {
     <form action={formAction} className="space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       <div>
-        <label htmlFor="identifier" className="block text-sm font-medium text-slate-700">
-          Username or email
+        <label htmlFor="identifier" className="block text-center text-sm font-medium text-slate-700">
+          Username
         </label>
         <input
           id="identifier"
@@ -26,7 +26,7 @@ export default function LoginForm({ next }: { next?: string }) {
         />
       </div>
       <div>
-        <label htmlFor="password" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="password" className="block text-center text-sm font-medium text-slate-700">
           Password
         </label>
         <input
