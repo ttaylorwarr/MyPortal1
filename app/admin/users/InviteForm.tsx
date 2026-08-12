@@ -1,13 +1,27 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef } from "react";
 import { createInviteAction, type UserFormState } from "@/app/actions/users";
+
+const ALPHABET = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+const CODE_LENGTH = 10;
+
+function randomCode() {
+  let code = "";
+  const values = new Uint32Array(CODE_LENGTH);
+  crypto.getRandomValues(values);
+  for (let i = 0; i < CODE_LENGTH; i++) {
+    code += ALPHABET[values[i] % ALPHABET.length];
+  }
+  return code;
+}
 
 export default function InviteForm() {
   const [state, formAction, pending] = useActionState<UserFormState, FormData>(
     createInviteAction,
     undefined
   );
+  const safeCodeRef = useRef<HTMLInputElement>(null);
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
@@ -100,11 +114,40 @@ export default function InviteForm() {
         />
       </div>
 
-      <p className="text-xs text-slate-500">
-        No password here — after you create the account, you&apos;ll get a Safe-Code to give this
-        person. They&apos;ll use it at <span className="font-medium">/activate</span> to set their
-        own password.
-      </p>
+      <div>
+        <label htmlFor="safeCode" className="block text-sm font-medium text-slate-700">
+          Safe-Code
+        </label>
+        <div className="mt-1 flex gap-2">
+          <input
+            ref={safeCodeRef}
+            id="safeCode"
+            name="safeCode"
+            type="text"
+            required
+            minLength={4}
+            maxLength={20}
+            defaultValue={randomCode()}
+            onChange={(e) => {
+              e.target.value = e.target.value.toUpperCase();
+            }}
+            className="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm uppercase tracking-widest focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+          <button
+            type="button"
+            onClick={() => {
+              if (safeCodeRef.current) safeCodeRef.current.value = randomCode();
+            }}
+            className="shrink-0 rounded-lg border border-slate-300 px-3 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+          >
+            New code
+          </button>
+        </div>
+        <p className="mt-1 text-xs text-slate-500">
+          We generated this for you — give it to the new hire so they can activate their account
+          at /activate. You can also type your own code instead.
+        </p>
+      </div>
 
       {state?.error && (
         <p className="text-sm text-red-600" role="alert">

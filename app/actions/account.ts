@@ -16,8 +16,6 @@ const usernameSchema = z
   .regex(/^[a-z0-9_]+$/, "Username can only have lowercase letters, numbers, and underscores");
 
 const profileSchema = z.object({
-  firstName: z.string().trim().min(1, "First name is required"),
-  lastName: z.string().trim().min(1, "Last name is required"),
   username: usernameSchema,
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
 });
@@ -30,8 +28,6 @@ export async function updateProfileAction(
   if (!me) redirect("/login?next=/account/edit");
 
   const parsed = profileSchema.safeParse({
-    firstName: formData.get("firstName"),
-    lastName: formData.get("lastName"),
     username: formData.get("username"),
     email: formData.get("email"),
   });
@@ -40,7 +36,7 @@ export async function updateProfileAction(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { firstName, lastName, username, email } = parsed.data;
+  const { username, email } = parsed.data;
 
   const existing = await prisma.user.findFirst({
     where: { AND: [{ OR: [{ email }, { username }] }, { NOT: { id: me.id } }] },
@@ -54,7 +50,7 @@ export async function updateProfileAction(
     };
   }
 
-  await prisma.user.update({ where: { id: me.id }, data: { firstName, lastName, username, email } });
+  await prisma.user.update({ where: { id: me.id }, data: { username, email } });
   redirect("/account?saved=1");
 }
 
