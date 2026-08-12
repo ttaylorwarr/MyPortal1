@@ -39,6 +39,22 @@ export default async function SchedulePage({
 
   const currentPath = `/employee${weekOffset ? `?week=${weekOffset}` : ""}`;
   const dayFmt = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "short", day: "numeric" });
+  const dayNameFmt = new Intl.DateTimeFormat("en-US", { weekday: "short" });
+  const todayKey = toDateInputValue(new Date());
+
+  const palette = [
+    "bg-blue-100 text-blue-800 border-blue-200",
+    "bg-emerald-100 text-emerald-800 border-emerald-200",
+    "bg-amber-100 text-amber-800 border-amber-200",
+    "bg-fuchsia-100 text-fuchsia-800 border-fuchsia-200",
+    "bg-cyan-100 text-cyan-800 border-cyan-200",
+    "bg-rose-100 text-rose-800 border-rose-200",
+  ];
+  const colorFor = (userId: string) => {
+    let hash = 0;
+    for (let i = 0; i < userId.length; i++) hash = (hash * 31 + userId.charCodeAt(i)) % palette.length;
+    return palette[hash];
+  };
 
   return (
     <div>
@@ -85,33 +101,49 @@ export default async function SchedulePage({
         />
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        {days.map((day) => {
-          const key = toDateInputValue(day);
-          const dayShifts = shifts.filter((s) => toDateInputValue(s.date) === key);
-          return (
-            <div key={key} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-              <h3 className="text-sm font-semibold text-slate-900">{dayFmt.format(day)}</h3>
-              {dayShifts.length === 0 ? (
-                <p className="mt-2 text-sm text-slate-400">No shifts</p>
-              ) : (
-                <ul className="mt-2 space-y-2">
-                  {dayShifts.map((shift) => {
-                    const canDelete = isManager || shift.userId === me.id;
-                    return (
-                      <li
-                        key={shift.id}
-                        className="flex items-center justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm"
-                      >
-                        <span>
-                          <span className="font-medium text-slate-900">
-                            {shift.startTime}–{shift.endTime}
-                          </span>
-                          {isManager && (
-                            <span className="ml-2 text-slate-600">
-                              {shift.user.firstName} {shift.user.lastName}
-                            </span>
-                          )}
+      <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
+        <div className="grid min-w-[770px] grid-cols-7">
+          {days.map((day) => {
+            const key = toDateInputValue(day);
+            const isToday = key === todayKey;
+            return (
+              <div
+                key={key}
+                className={`border-b border-l border-slate-200 px-2 py-3 text-center first:border-l-0 ${
+                  isToday ? "bg-blue-50" : ""
+                }`}
+              >
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  {dayNameFmt.format(day)}
+                </p>
+                <p className={`text-sm font-bold ${isToday ? "text-blue-700" : "text-slate-900"}`}>
+                  {day.getDate()}
+                </p>
+              </div>
+            );
+          })}
+
+          {days.map((day) => {
+            const key = toDateInputValue(day);
+            const isToday = key === todayKey;
+            const dayShifts = shifts.filter((s) => toDateInputValue(s.date) === key);
+            return (
+              <div
+                key={key}
+                className={`min-h-[140px] space-y-1.5 border-l border-slate-200 p-2 first:border-l-0 ${
+                  isToday ? "bg-blue-50/50" : ""
+                }`}
+              >
+                {dayShifts.map((shift) => {
+                  const canDelete = isManager || shift.userId === me.id;
+                  return (
+                    <div
+                      key={shift.id}
+                      className={`group rounded-lg border px-2 py-1.5 text-xs leading-tight ${colorFor(shift.userId)}`}
+                    >
+                      <div className="flex items-start justify-between gap-1">
+                        <span className="font-semibold">
+                          {shift.startTime}–{shift.endTime}
                         </span>
                         {canDelete && (
                           <form action={deleteShiftAction}>
@@ -119,20 +151,26 @@ export default async function SchedulePage({
                             <input type="hidden" name="returnTo" value={currentPath} />
                             <button
                               type="submit"
-                              className="text-xs font-semibold text-red-600 hover:underline"
+                              aria-label="Remove shift"
+                              className="leading-none opacity-60 hover:opacity-100"
                             >
-                              Remove
+                              ✕
                             </button>
                           </form>
                         )}
-                      </li>
-                    );
-                  })}
-                </ul>
-              )}
-            </div>
-          );
-        })}
+                      </div>
+                      {isManager && (
+                        <p className="mt-0.5 truncate">
+                          {shift.user.firstName} {shift.user.lastName}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );
