@@ -1,15 +1,14 @@
 type FiltersProps = {
   q?: string;
-  purpose?: string;
   type?: string;
   maxPrice?: string;
 };
 
-export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
+export default function Filters({ q, type, maxPrice }: FiltersProps) {
   return (
     <form
       method="get"
-      className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-5"
+      className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4"
     >
       <div className="lg:col-span-2">
         <label htmlFor="q" className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -23,21 +22,6 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           defaultValue={q}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
-      </div>
-      <div>
-        <label htmlFor="purpose" className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
-          Trip type
-        </label>
-        <select
-          id="purpose"
-          name="purpose"
-          defaultValue={purpose ?? ""}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          <option value="">Vacation or Work</option>
-          <option value="VACATION">Vacation</option>
-          <option value="WORK">Work</option>
-        </select>
       </div>
       <div>
         <label htmlFor="type" className="block text-xs font-semibold uppercase tracking-wide text-slate-500">
@@ -71,7 +55,7 @@ export default function Filters({ q, purpose, type, maxPrice }: FiltersProps) {
           <option value="500">Up to $500</option>
         </select>
       </div>
-      <div className="flex items-end lg:col-span-5">
+      <div className="flex items-end lg:col-span-4">
         <button
           type="submit"
           className="w-full rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700 sm:w-auto"
