@@ -5,7 +5,6 @@ import type { Prisma } from "@/app/generated/prisma/client";
 
 type SearchParams = {
   q?: string;
-  purpose?: string;
   type?: string;
   maxPrice?: string;
 };
@@ -16,7 +15,7 @@ export default async function Home({
   searchParams: Promise<SearchParams>;
 }) {
   const params = await searchParams;
-  const { q, purpose, type, maxPrice } = params;
+  const { q, type, maxPrice } = params;
 
   const where: Prisma.PropertyWhereInput = { isAvailable: true };
 
@@ -26,9 +25,6 @@ export default async function Home({
       { country: { contains: q } },
       { title: { contains: q } },
     ];
-  }
-  if (purpose === "VACATION" || purpose === "WORK") {
-    where.purpose = purpose === "VACATION" ? { in: ["VACATION", "BOTH"] } : { in: ["WORK", "BOTH"] };
   }
   if (type === "HOTEL" || type === "HOUSE") {
     where.type = type;
@@ -55,7 +51,7 @@ export default async function Home({
             waiting in your account when you&apos;re ready to check in.
           </p>
           <div className="mt-6">
-            <Filters q={q} purpose={purpose} type={type} maxPrice={maxPrice} />
+            <Filters q={q} type={type} maxPrice={maxPrice} />
           </div>
         </div>
       </section>
