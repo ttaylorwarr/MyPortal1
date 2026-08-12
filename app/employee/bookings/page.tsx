@@ -1,12 +1,13 @@
+import { requireEmployeeArea } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import BookingsTable from "@/app/components/BookingsTable";
 
-export default async function AdminBookingsPage({
+export default async function EmployeeBookingsPage({
   searchParams,
 }: {
   searchParams: Promise<{ updated?: string }>;
 }) {
-  const { updated } = await searchParams;
+  const [, { updated }] = await Promise.all([requireEmployeeArea(), searchParams]);
 
   const bookings = await prisma.booking.findMany({
     include: { user: true, property: true },
@@ -22,7 +23,7 @@ export default async function AdminBookingsPage({
         </div>
       )}
       <div className="mt-4">
-        <BookingsTable bookings={bookings} returnTo="/admin/bookings" />
+        <BookingsTable bookings={bookings} returnTo="/employee/bookings" />
       </div>
     </div>
   );

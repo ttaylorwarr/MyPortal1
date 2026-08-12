@@ -95,6 +95,7 @@ export default function InviteForm() {
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
           <option value="MANAGER">Manager</option>
+          <option value="EMPLOYEE">Employee</option>
           <option value="MEMBER">Member</option>
         </select>
       </div>

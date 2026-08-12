@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getCurrentUser } from "@/lib/auth";
+import { getCurrentUser, requireEmployeeArea } from "@/lib/auth";
 
 export type BookingFormState = { error?: string } | undefined;
 
@@ -85,4 +85,76 @@ export async function createBookingAction(
   });
 
   redirect(`/account?booked=${booking.id}`);
+}
+
+export type EditBookingFormState = { error?: string } | undefined;
+
+const editBookingSchema = z
+  .object({
+    bookingId: z.string().min(1),
+    checkIn: z.string().min(1, "Choose a check-in date"),
+    checkOut: z.string().min(1, "Choose a check-out date"),
+    guests: z.coerce.number().int().min(1, "At least 1 guest"),
+    returnTo: z.string().optional(),
+  })
+  .refine((data) => new Date(data.checkOut) > new Date(data.checkIn), {
+    message: "Check-out must be after check-in",
+    path: ["checkOut"],
+  });
+
+export async function updateBookingAction(
+  _prevState: EditBookingFormState,
+  formData: FormData
+): Promise<EditBookingFormState> {
+  await requireEmployeeArea();
+
+  const parsed = editBookingSchema.safeParse({
+    bookingId: formData.get("bookingId"),
+    checkIn: formData.get("checkIn"),
+    checkOut: formData.get("checkOut"),
+    guests: formData.get("guests"),
+    returnTo: formData.get("returnTo"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid booking details" };
+  }
+
+  const { bookingId, checkIn, checkOut, guests, returnTo } = parsed.data;
+
+  const booking = await prisma.booking.findUnique({
+    where: { id: bookingId },
+    include: { property: true },
+  });
+  if (!booking) {
+    return { error: "This booking no longer exists." };
+  }
+
+  if (guests > booking.property.maxGuests) {
+    return { error: `This stay sleeps up to ${booking.property.maxGuests} guests.` };
+  }
+
+  const checkInDate = new Date(checkIn);
+  const checkOutDate = new Date(checkOut);
+  const nights = Math.round(
+    (checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  if (nights < 1) {
+    return { error: "Stay must be at least 1 night." };
+  }
+
+  await prisma.booking.update({
+    where: { id: bookingId },
+    data: {
+      checkIn: checkInDate,
+      checkOut: checkOutDate,
+      guests,
+      totalPrice: nights * booking.property.pricePerNight,
+    },
+  });
+
+  const safeReturnTo = returnTo && (returnTo.startsWith("/employee") || returnTo.startsWith("/admin"))
+    ? returnTo
+    : "/employee/bookings";
+  redirect(`${safeReturnTo}?updated=1`);
 }

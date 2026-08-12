@@ -70,5 +70,7 @@ export async function activateAccountAction(
   });
 
   await createSession(user.id);
-  redirect(user.role === "MEMBER" ? "/account" : "/admin");
+  if (user.role === "ADMIN" || user.role === "MANAGER") redirect("/admin");
+  if (user.role === "EMPLOYEE") redirect("/employee");
+  redirect("/account");
 }

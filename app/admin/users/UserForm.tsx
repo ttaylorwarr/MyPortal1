@@ -101,6 +101,7 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
         >
           <option value="ADMIN">Admin</option>
           <option value="MANAGER">Manager</option>
+          <option value="EMPLOYEE">Employee</option>
           <option value="MEMBER">Member</option>
         </select>
       </div>
