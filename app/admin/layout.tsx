@@ -9,30 +9,46 @@ export default async function AdminLayout({
   const user = await requireStaff();
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 sm:px-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+    <div className="mx-auto flex w-full max-w-6xl flex-col gap-6 px-4 py-8 sm:px-6 md:flex-row">
+      <aside className="shrink-0 md:w-48">
         <h1 className="text-2xl font-bold text-slate-900">Admin</h1>
-        <nav className="flex gap-4 text-sm font-medium text-slate-700">
-          <Link href="/admin" className="hover:text-blue-700">
+        <nav className="mt-4 flex gap-2 overflow-x-auto text-sm font-medium text-slate-700 md:flex-col md:overflow-visible">
+          <Link
+            href="/admin"
+            className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+          >
             Dashboard
           </Link>
-          <Link href="/admin/listings" className="hover:text-blue-700">
+          <Link
+            href="/admin/listings"
+            className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+          >
             Listings
           </Link>
-          <Link href="/admin/bookings" className="hover:text-blue-700">
+          <Link
+            href="/admin/bookings"
+            className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+          >
             Bookings
           </Link>
           {user.role === "ADMIN" && (
-            <Link href="/admin/users" className="hover:text-blue-700">
+            <Link
+              href="/admin/users"
+              className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+            >
               Users
             </Link>
           )}
-          <Link href="/" className="hover:text-blue-700">
+          <div className="my-2 hidden border-t border-slate-200 md:block" />
+          <Link
+            href="/"
+            className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+          >
             Back to site
           </Link>
         </nav>
-      </div>
-      <div className="mt-6">{children}</div>
+      </aside>
+      <div className="min-w-0 flex-1">{children}</div>
     </div>
   );
 }

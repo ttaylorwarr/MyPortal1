@@ -13,15 +13,15 @@ export default function LoginForm({ next }: { next?: string }) {
     <form action={formAction} className="space-y-4">
       {next && <input type="hidden" name="next" value={next} />}
       <div>
-        <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-          Email
+        <label htmlFor="identifier" className="block text-sm font-medium text-slate-700">
+          Username or email
         </label>
         <input
-          id="email"
-          name="email"
-          type="email"
+          id="identifier"
+          name="identifier"
+          type="text"
           required
-          autoComplete="email"
+          autoComplete="username"
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
