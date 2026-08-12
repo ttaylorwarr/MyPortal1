@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { formatDate } from "@/lib/format";
 import DeleteUserButton from "./DeleteUserButton";
 
 const roleLabel: Record<string, string> = {
@@ -28,7 +27,6 @@ export default async function AdminUsersPage({
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
-    include: { _count: { select: { bookings: true } } },
   });
 
   return (
@@ -73,24 +71,18 @@ export default async function AdminUsersPage({
       )}
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full min-w-[920px] text-left text-sm">
+        <table className="w-full min-w-[560px] text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Email</th>
-              <th className="px-4 py-3">Role</th>
-              <th className="px-4 py-3">Pay rate</th>
-              <th className="px-4 py-3">Status</th>
-              <th className="px-4 py-3">Bookings</th>
-              <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3"></th>
             </tr>
           </thead>
           <tbody>
             {users.map((user) => {
               const isSelf = user.id === me.id;
-              const isPending = !user.passwordHash;
               return (
                 <tr key={user.id} className="border-b border-slate-100 last:border-0">
                   <td className="px-4 py-3 font-medium text-slate-900">
@@ -99,26 +91,6 @@ export default async function AdminUsersPage({
                   </td>
                   <td className="px-4 py-3 text-slate-600">{user.username}</td>
                   <td className="px-4 py-3 text-slate-600">{user.email}</td>
-                  <td className="px-4 py-3 text-slate-600">{roleLabel[user.role]}</td>
-                  <td className="px-4 py-3 text-slate-600">
-                    {user.hourlyPayRate != null ? `$${user.hourlyPayRate.toFixed(2)}/hr` : "—"}
-                  </td>
-                  <td className="px-4 py-3">
-                    {isPending ? (
-                      <span
-                        className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800"
-                        title={user.safeCode ? `Safe-Code: ${user.safeCode}` : undefined}
-                      >
-                        Pending activation
-                      </span>
-                    ) : (
-                      <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
-                        Active
-                      </span>
-                    )}
-                  </td>
-                  <td className="px-4 py-3 text-slate-600">{user._count.bookings}</td>
-                  <td className="px-4 py-3 text-slate-600">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-2">
                       <Link
