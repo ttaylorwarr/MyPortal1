@@ -9,9 +9,12 @@ import KeyBadge from "@/app/components/KeyBadge";
 export default async function AccountPage({
   searchParams,
 }: {
-  searchParams: Promise<{ booked?: string }>;
+  searchParams: Promise<{ booked?: string; saved?: string; passwordChanged?: string }>;
 }) {
-  const [user, { booked }] = await Promise.all([getCurrentUser(), searchParams]);
+  const [user, { booked, saved, passwordChanged }] = await Promise.all([
+    getCurrentUser(),
+    searchParams,
+  ]);
   if (!user) redirect("/login?next=/account");
 
   const bookings = await prisma.booking.findMany({
@@ -22,14 +25,34 @@ export default async function AccountPage({
 
   return (
     <div className="mx-auto w-full max-w-4xl px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-bold text-slate-900">My account</h1>
-      <p className="mt-1 text-slate-600">
-        {user.name} &middot; {user.email}
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900">My account</h1>
+          <p className="mt-1 text-slate-600">
+            {user.name} &middot; @{user.username} &middot; {user.email}
+          </p>
+        </div>
+        <Link
+          href="/account/edit"
+          className="rounded-lg border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100"
+        >
+          Edit account
+        </Link>
+      </div>
 
       {booked && (
         <div className="mt-6 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
           Booking confirmed! Your digital key is ready below.
+        </div>
+      )}
+      {saved && (
+        <div className="mt-6 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+          Account updated.
+        </div>
+      )}
+      {passwordChanged && (
+        <div className="mt-6 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+          Password changed.
         </div>
       )}
 
