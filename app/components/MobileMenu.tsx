@@ -11,8 +11,18 @@ type MobileUser = {
 } | null;
 
 const linkClass = "rounded-lg px-3 py-2 hover:bg-slate-100";
-const subLinkClass = "rounded-lg px-3 py-2 pl-6 text-slate-600 hover:bg-slate-100";
-const sectionHeadingClass = "px-3 pt-3 text-xs font-semibold uppercase tracking-wide text-slate-400";
+const sectionHeadingClass = "px-1 pt-4 text-xs font-semibold uppercase tracking-wide text-slate-400";
+const sectionListClass = "mt-1 overflow-hidden rounded-xl border border-slate-200 divide-y divide-slate-100";
+const rowLinkClass = "flex items-center justify-between px-3 py-2.5 text-slate-700 hover:bg-slate-50";
+
+function RowLink({ href, onClick, children }: { href: string; onClick: () => void; children: React.ReactNode }) {
+  return (
+    <Link href={href} onClick={onClick} className={rowLinkClass}>
+      {children}
+      <span className="text-slate-300">›</span>
+    </Link>
+  );
+}
 
 export default function MobileMenu({ user }: { user: MobileUser }) {
   const [open, setOpen] = useState(false);
@@ -65,40 +75,44 @@ export default function MobileMenu({ user }: { user: MobileUser }) {
                     {isStaff && (
                       <>
                         <p className={sectionHeadingClass}>Employee</p>
-                        <Link href="/employee" onClick={close} className={subLinkClass}>
-                          Schedule
-                        </Link>
-                        <Link href="/employee/timeclock" onClick={close} className={subLinkClass}>
-                          Time Clock
-                        </Link>
-                        <Link href="/employee/timesheet" onClick={close} className={subLinkClass}>
-                          Timesheet
-                        </Link>
+                        <div className={sectionListClass}>
+                          <RowLink href="/employee" onClick={close}>
+                            Schedule
+                          </RowLink>
+                          <RowLink href="/employee/timeclock" onClick={close}>
+                            Time Clock
+                          </RowLink>
+                          <RowLink href="/employee/timesheet" onClick={close}>
+                            Timesheet
+                          </RowLink>
+                        </div>
                       </>
                     )}
 
                     {isAdminOrManager && (
                       <>
                         <p className={sectionHeadingClass}>Admin</p>
-                        <Link href="/admin" onClick={close} className={subLinkClass}>
-                          Dashboard
-                        </Link>
-                        <Link href="/admin/listings" onClick={close} className={subLinkClass}>
-                          Listings
-                        </Link>
-                        <Link href="/admin/bookings" onClick={close} className={subLinkClass}>
-                          Bookings
-                        </Link>
-                        {user.role === "ADMIN" && (
-                          <Link href="/admin/schedule" onClick={close} className={subLinkClass}>
-                            Manager Schedule
-                          </Link>
-                        )}
-                        {user.role === "ADMIN" && (
-                          <Link href="/admin/users" onClick={close} className={subLinkClass}>
-                            Users
-                          </Link>
-                        )}
+                        <div className={sectionListClass}>
+                          <RowLink href="/admin" onClick={close}>
+                            Dashboard
+                          </RowLink>
+                          <RowLink href="/admin/listings" onClick={close}>
+                            Listings
+                          </RowLink>
+                          <RowLink href="/admin/bookings" onClick={close}>
+                            Bookings
+                          </RowLink>
+                          {user.role === "ADMIN" && (
+                            <RowLink href="/admin/schedule" onClick={close}>
+                              Manager Schedule
+                            </RowLink>
+                          )}
+                          {user.role === "ADMIN" && (
+                            <RowLink href="/admin/users" onClick={close}>
+                              Users
+                            </RowLink>
+                          )}
+                        </div>
                       </>
                     )}
 
