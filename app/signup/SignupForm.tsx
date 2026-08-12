@@ -25,6 +25,26 @@ export default function SignupForm() {
         />
       </div>
       <div>
+        <label htmlFor="username" className="block text-sm font-medium text-slate-700">
+          Username
+        </label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          required
+          minLength={3}
+          maxLength={20}
+          pattern="[a-zA-Z0-9_]+"
+          autoComplete="username"
+          placeholder="e.g. troy_t"
+          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        />
+        <p className="mt-1 text-xs text-slate-500">
+          Letters, numbers, and underscores only. Used to sign in.
+        </p>
+      </div>
+      <div>
         <label htmlFor="email" className="block text-sm font-medium text-slate-700">
           Email
         </label>

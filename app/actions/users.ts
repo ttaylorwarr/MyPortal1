@@ -3,13 +3,71 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "@/lib/auth";
+import { requireAdmin, hashPassword } from "@/lib/auth";
 
 export type UserFormState = { error?: string } | undefined;
 
 const roleSchema = z.enum(["ADMIN", "MANAGER", "MEMBER"]);
 
-export async function updateUserRoleAction(
+const usernameSchema = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .min(3, "Username must be at least 3 characters")
+  .max(20, "Username must be 20 characters or fewer")
+  .regex(/^[a-z0-9_]+$/, "Username can only have lowercase letters, numbers, and underscores");
+
+const createUserSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  username: usernameSchema,
+  email: z.string().trim().toLowerCase().email("Enter a valid email"),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  role: roleSchema,
+});
+
+export async function createUserAction(
+  _prevState: UserFormState,
+  formData: FormData
+): Promise<UserFormState> {
+  await requireAdmin();
+
+  const parsed = createUserSchema.safeParse({
+    name: formData.get("name"),
+    username: formData.get("username"),
+    email: formData.get("email"),
+    password: formData.get("password"),
+    role: formData.get("role"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  const { name, username, email, password, role } = parsed.data;
+
+  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
+  if (existing) {
+    return {
+      error:
+        existing.email === email
+          ? "An account with that email already exists"
+          : "That username is taken",
+    };
+  }
+
+  const passwordHash = await hashPassword(password);
+  await prisma.user.create({ data: { name, username, email, passwordHash, role } });
+  redirect("/admin/users?created=1");
+}
+
+const updateUserSchema = z.object({
+  name: z.string().trim().min(1, "Name is required"),
+  username: usernameSchema,
+  email: z.string().trim().toLowerCase().email("Enter a valid email"),
+  role: roleSchema,
+});
+
+export async function updateUserAction(
   _prevState: UserFormState,
   formData: FormData
 ): Promise<UserFormState> {
@@ -20,16 +78,36 @@ export async function updateUserRoleAction(
     return { error: "Missing user id" };
   }
 
-  const parsedRole = roleSchema.safeParse(formData.get("role"));
-  if (!parsedRole.success) {
-    return { error: "Invalid role" };
+  const parsed = updateUserSchema.safeParse({
+    name: formData.get("name"),
+    username: formData.get("username"),
+    email: formData.get("email"),
+    role: formData.get("role"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  if (userId === admin.id && parsedRole.data !== "ADMIN") {
+  const { name, username, email, role } = parsed.data;
+
+  if (userId === admin.id && role !== "ADMIN") {
     return { error: "You can't remove your own admin access." };
   }
 
-  await prisma.user.update({ where: { id: userId }, data: { role: parsedRole.data } });
+  const existing = await prisma.user.findFirst({
+    where: { AND: [{ OR: [{ email }, { username }] }, { NOT: { id: userId } }] },
+  });
+  if (existing) {
+    return {
+      error:
+        existing.email === email
+          ? "An account with that email already exists"
+          : "That username is taken",
+    };
+  }
+
+  await prisma.user.update({ where: { id: userId }, data: { name, username, email, role } });
   redirect("/admin/users?saved=1");
 }
 

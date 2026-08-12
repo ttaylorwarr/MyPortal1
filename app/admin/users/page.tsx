@@ -1,7 +1,7 @@
+import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { formatDate } from "@/lib/format";
-import RoleForm from "./RoleForm";
 import DeleteUserButton from "./DeleteUserButton";
 
 const roleLabel: Record<string, string> = {
@@ -13,9 +13,12 @@ const roleLabel: Record<string, string> = {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; deleted?: string; error?: string }>;
+  searchParams: Promise<{ saved?: string; created?: string; deleted?: string; error?: string }>;
 }) {
-  const [me, { saved, deleted, error }] = await Promise.all([requireAdmin(), searchParams]);
+  const [me, { saved, created, deleted, error }] = await Promise.all([
+    requireAdmin(),
+    searchParams,
+  ]);
 
   const users = await prisma.user.findMany({
     orderBy: { createdAt: "desc" },
@@ -24,11 +27,24 @@ export default async function AdminUsersPage({
 
   return (
     <div>
-      <h2 className="text-lg font-bold text-slate-900">Users ({users.length})</h2>
+      <div className="flex flex-wrap items-center justify-between gap-4">
+        <h2 className="text-lg font-bold text-slate-900">Users ({users.length})</h2>
+        <Link
+          href="/admin/users/new"
+          className="rounded-lg bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-700"
+        >
+          Add user
+        </Link>
+      </div>
 
+      {created && (
+        <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+          Account created.
+        </div>
+      )}
       {saved && (
         <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
-          Role updated.
+          Account updated.
         </div>
       )}
       {deleted && (
@@ -43,10 +59,11 @@ export default async function AdminUsersPage({
       )}
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full min-w-[720px] text-left text-sm">
+        <table className="w-full min-w-[820px] text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3">Name</th>
+              <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Role</th>
               <th className="px-4 py-3">Bookings</th>
@@ -62,14 +79,21 @@ export default async function AdminUsersPage({
                   <td className="px-4 py-3 font-medium text-slate-900">
                     {user.name} {isSelf && <span className="text-xs text-slate-400">(you)</span>}
                   </td>
+                  <td className="px-4 py-3 text-slate-600">{user.username}</td>
                   <td className="px-4 py-3 text-slate-600">{user.email}</td>
-                  <td className="px-4 py-3">
-                    <RoleForm userId={user.id} role={user.role} isSelf={isSelf} />
-                  </td>
+                  <td className="px-4 py-3 text-slate-600">{roleLabel[user.role]}</td>
                   <td className="px-4 py-3 text-slate-600">{user._count.bookings}</td>
                   <td className="px-4 py-3 text-slate-600">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3 text-right">
-                    {!isSelf && <DeleteUserButton userId={user.id} name={user.name} />}
+                    <div className="flex justify-end gap-2">
+                      <Link
+                        href={`/admin/users/${user.id}/edit`}
+                        className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:bg-slate-100"
+                      >
+                        Edit
+                      </Link>
+                      {!isSelf && <DeleteUserButton userId={user.id} name={user.name} />}
+                    </div>
                   </td>
                 </tr>
               );
