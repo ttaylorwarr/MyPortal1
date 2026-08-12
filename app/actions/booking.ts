@@ -4,7 +4,7 @@ import { randomBytes } from "crypto";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { getCurrentUser, requireEmployeeArea } from "@/lib/auth";
+import { getCurrentUser, requireStaff } from "@/lib/auth";
 
 export type BookingFormState = { error?: string } | undefined;
 
@@ -106,7 +106,7 @@ export async function updateBookingAction(
   _prevState: EditBookingFormState,
   formData: FormData
 ): Promise<EditBookingFormState> {
-  await requireEmployeeArea();
+  await requireStaff();
 
   const parsed = editBookingSchema.safeParse({
     bookingId: formData.get("bookingId"),
@@ -153,8 +153,6 @@ export async function updateBookingAction(
     },
   });
 
-  const safeReturnTo = returnTo && (returnTo.startsWith("/employee") || returnTo.startsWith("/admin"))
-    ? returnTo
-    : "/employee/bookings";
+  const safeReturnTo = returnTo && returnTo.startsWith("/admin") ? returnTo : "/admin/bookings";
   redirect(`${safeReturnTo}?updated=1`);
 }
