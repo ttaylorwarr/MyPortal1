@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { getCurrentUser } from "@/lib/auth";
 import { logoutAction } from "@/app/actions/auth";
+import MobileMenu from "./MobileMenu";
 
 export default async function Header() {
   const user = await getCurrentUser();
@@ -12,7 +13,8 @@ export default async function Header() {
         <Link href="/" className="flex items-center">
           <Image src="/logo.svg" alt="TroysSafes" width={170} height={41} priority />
         </Link>
-        <nav className="flex items-center gap-4 text-sm font-medium text-slate-700">
+        <MobileMenu user={user ? { firstName: user.firstName, role: user.role } : null} />
+        <nav className="hidden items-center gap-4 text-sm font-medium text-slate-700 sm:flex">
           <Link href="/" className="hover:text-blue-700">
             Home
           </Link>
