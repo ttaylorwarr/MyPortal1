@@ -4,11 +4,13 @@ import { useActionState } from "react";
 import { updateProfileAction, type AccountFormState } from "@/app/actions/account";
 
 export default function ProfileForm({
-  name,
+  firstName,
+  lastName,
   username,
   email,
 }: {
-  name: string;
+  firstName: string;
+  lastName: string;
   username: string;
   email: string;
 }) {
@@ -19,18 +21,33 @@ export default function ProfileForm({
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
-      <div>
-        <label htmlFor="name" className="block text-sm font-medium text-slate-700">
-          Full name
-        </label>
-        <input
-          id="name"
-          name="name"
-          type="text"
-          required
-          defaultValue={name}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        />
+      <div className="grid grid-cols-2 gap-3">
+        <div>
+          <label htmlFor="firstName" className="block text-sm font-medium text-slate-700">
+            First name
+          </label>
+          <input
+            id="firstName"
+            name="firstName"
+            type="text"
+            required
+            defaultValue={firstName}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
+        <div>
+          <label htmlFor="lastName" className="block text-sm font-medium text-slate-700">
+            Last name
+          </label>
+          <input
+            id="lastName"
+            name="lastName"
+            type="text"
+            required
+            defaultValue={lastName}
+            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+          />
+        </div>
       </div>
 
       <div>

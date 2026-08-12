@@ -15,23 +15,34 @@ export default async function EditUserPage({ params }: { params: Promise<{ id: s
   return (
     <div>
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-bold text-slate-900">Edit {user.name}</h2>
+        <h2 className="text-lg font-bold text-slate-900">
+          Edit {user.firstName} {user.lastName}
+        </h2>
         <Link href="/admin/users" className="text-sm font-medium text-blue-700 hover:underline">
           Back to users
         </Link>
       </div>
+
+      {!user.passwordHash && user.safeCode && (
+        <div className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          This account hasn&apos;t been activated yet. Safe-Code:{" "}
+          <span className="font-mono font-semibold tracking-widest">{user.safeCode}</span>
+        </div>
+      )}
+
       <div className="mt-4">
         <UserForm
           action={updateUserAction}
           defaults={{
             id: user.id,
-            name: user.name,
+            firstName: user.firstName,
+            lastName: user.lastName,
             username: user.username,
             email: user.email,
             role: user.role,
+            hourlyPayRate: user.hourlyPayRate,
           }}
           submitLabel="Save changes"
-          showPassword={false}
         />
       </div>
     </div>

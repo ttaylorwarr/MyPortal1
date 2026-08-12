@@ -26,6 +26,12 @@ export default async function LoginPage({
           Sign up
         </Link>
       </p>
+      <p className="mt-2 text-center text-sm text-slate-600">
+        Have a Safe-Code from your admin?{" "}
+        <Link href="/activate" className="font-semibold text-blue-700 hover:underline">
+          Activate your account
+        </Link>
+      </p>
     </div>
   );
 }

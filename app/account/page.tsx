@@ -29,7 +29,7 @@ export default async function AccountPage({
         <div>
           <h1 className="text-2xl font-bold text-slate-900">My account</h1>
           <p className="mt-1 text-slate-600">
-            {user.name} &middot; @{user.username} &middot; {user.email}
+            {user.firstName} {user.lastName} &middot; @{user.username} &middot; {user.email}
           </p>
         </div>
         <Link
