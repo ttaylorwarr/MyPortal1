@@ -1,26 +1,27 @@
 import { requireEmployeeArea } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { getWeekStart, getWeekDays, formatWeekRange } from "@/lib/week";
+import { getMonthStart, getMonthGridWeeks, formatMonthLabel } from "@/lib/month";
 import ScheduleCalendar from "@/app/components/ScheduleCalendar";
 
 export default async function SchedulePage({
   searchParams,
 }: {
-  searchParams: Promise<{ week?: string }>;
+  searchParams: Promise<{ month?: string }>;
 }) {
-  const [me, { week }] = await Promise.all([requireEmployeeArea(), searchParams]);
+  const [me, { month }] = await Promise.all([requireEmployeeArea(), searchParams]);
 
-  const weekOffset = week ? Number(week) : 0;
-  const weekStart = getWeekStart(new Date(), Number.isFinite(weekOffset) ? weekOffset : 0);
-  const weekEnd = new Date(weekStart);
-  weekEnd.setDate(weekEnd.getDate() + 7);
-  const days = getWeekDays(weekStart);
+  const monthOffset = month ? Number(month) : 0;
+  const monthStart = getMonthStart(new Date(), Number.isFinite(monthOffset) ? monthOffset : 0);
+  const weeks = getMonthGridWeeks(monthStart);
+  const rangeStart = weeks[0][0];
+  const rangeEnd = new Date(weeks[weeks.length - 1][6]);
+  rangeEnd.setDate(rangeEnd.getDate() + 1);
 
   const isManager = me.role === "ADMIN" || me.role === "MANAGER";
 
   const shifts = await prisma.shift.findMany({
     where: {
-      date: { gte: weekStart, lt: weekEnd },
+      date: { gte: rangeStart, lt: rangeEnd },
       ...(isManager ? {} : { userId: me.id }),
     },
     include: { user: true },
@@ -30,25 +31,25 @@ export default async function SchedulePage({
   return (
     <div>
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h2 className="text-lg font-bold text-slate-900">Schedule — {formatWeekRange(weekStart)}</h2>
+        <h2 className="text-lg font-bold text-slate-900">Schedule — {formatMonthLabel(monthStart)}</h2>
         <div className="flex gap-2 text-sm font-medium">
           <a
-            href={`/employee?week=${weekOffset - 1}`}
+            href={`/employee?month=${monthOffset - 1}`}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            &larr; Prev week
+            &larr; Prev
           </a>
           <a
             href="/employee"
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            This week
+            This month
           </a>
           <a
-            href={`/employee?week=${weekOffset + 1}`}
+            href={`/employee?month=${monthOffset + 1}`}
             className="rounded-lg border border-slate-300 px-3 py-1.5 text-slate-700 hover:bg-slate-100"
           >
-            Next week &rarr;
+            Next &rarr;
           </a>
         </div>
       </div>
@@ -58,7 +59,12 @@ export default async function SchedulePage({
       </p>
 
       <div className="mt-6">
-        <ScheduleCalendar days={days} shifts={shifts} showNames={isManager} />
+        <ScheduleCalendar
+          weeks={weeks}
+          monthIndex={monthStart.getMonth()}
+          shifts={shifts}
+          showNames={isManager}
+        />
       </div>
     </div>
   );

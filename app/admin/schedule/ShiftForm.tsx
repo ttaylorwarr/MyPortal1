@@ -6,12 +6,14 @@ import { createShiftAction, type ScheduleFormState } from "@/app/actions/schedul
 type StaffOption = { id: string; firstName: string; lastName: string };
 
 export default function ShiftForm({
-  weekDays,
   staff,
+  minDate,
+  maxDate,
   returnTo,
 }: {
-  weekDays: { value: string; label: string }[];
   staff: StaffOption[];
+  minDate: string;
+  maxDate: string;
   returnTo: string;
 }) {
   const [state, formAction, pending] = useActionState<ScheduleFormState, FormData>(
@@ -45,18 +47,16 @@ export default function ShiftForm({
         <label htmlFor="date" className="block text-xs font-semibold text-slate-600">
           Day
         </label>
-        <select
+        <input
           id="date"
           name="date"
+          type="date"
           required
+          min={minDate}
+          max={maxDate}
+          defaultValue={minDate}
           className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-        >
-          {weekDays.map((day) => (
-            <option key={day.value} value={day.value}>
-              {day.label}
-            </option>
-          ))}
-        </select>
+        />
       </div>
 
       <div>
