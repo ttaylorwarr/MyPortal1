@@ -21,12 +21,6 @@ export default async function LoginPage({
         <LoginForm next={next} />
       </div>
       <p className="mt-4 text-center text-sm text-slate-600">
-        Don&apos;t have an account?{" "}
-        <Link href="/signup" className="font-semibold text-blue-700 hover:underline">
-          Sign up
-        </Link>
-      </p>
-      <p className="mt-2 text-center text-sm text-slate-600">
         Have a Safe-Code from your admin?{" "}
         <Link href="/activate" className="font-semibold text-blue-700 hover:underline">
           Activate your account

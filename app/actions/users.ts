@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
-import { generateSafeCode } from "@/lib/safeCode";
 
 export type UserFormState = { error?: string } | undefined;
 
@@ -27,6 +26,14 @@ const hourlyPayRateSchema = z
     message: "Enter a valid hourly pay rate",
   });
 
+const safeCodeSchema = z
+  .string()
+  .trim()
+  .toUpperCase()
+  .min(4, "Safe-Code must be at least 4 characters")
+  .max(20, "Safe-Code must be 20 characters or fewer")
+  .regex(/^[A-Z0-9]+$/, "Safe-Code can only have letters and numbers");
+
 const inviteUserSchema = z.object({
   firstName: z.string().trim().min(1, "First name is required"),
   lastName: z.string().trim().min(1, "Last name is required"),
@@ -34,6 +41,7 @@ const inviteUserSchema = z.object({
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
   role: hireRoleSchema,
   hourlyPayRate: hourlyPayRateSchema,
+  safeCode: safeCodeSchema,
 });
 
 export async function createInviteAction(
@@ -49,25 +57,24 @@ export async function createInviteAction(
     email: formData.get("email"),
     role: formData.get("role"),
     hourlyPayRate: formData.get("hourlyPayRate"),
+    safeCode: formData.get("safeCode"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { firstName, lastName, username, email, role, hourlyPayRate } = parsed.data;
+  const { firstName, lastName, username, email, role, hourlyPayRate, safeCode } = parsed.data;
 
-  const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
+  const existing = await prisma.user.findFirst({
+    where: { OR: [{ email }, { username }, { safeCode }] },
+  });
   if (existing) {
-    return {
-      error:
-        existing.email === email
-          ? "An account with that email already exists"
-          : "That username is taken",
-    };
+    if (existing.email === email) return { error: "An account with that email already exists" };
+    if (existing.username === username) return { error: "That username is taken" };
+    return { error: "That Safe-Code is already in use — try a different one." };
   }
 
-  const safeCode = await generateSafeCode();
   await prisma.user.create({
     data: { firstName, lastName, username, email, role, hourlyPayRate, safeCode },
   });
