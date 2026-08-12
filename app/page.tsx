@@ -48,7 +48,7 @@ export default async function Home({
       <section className="border-b border-slate-200 bg-gradient-to-b from-blue-50 to-white">
         <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
           <h1 className="text-3xl font-bold text-slate-900 sm:text-4xl">
-            Rent a hotel or house for vacation or work
+            Rent a hotel or home
           </h1>
           <p className="mt-2 max-w-2xl text-slate-600">
             See the price and pictures, book the stay you want, and find your digital key
