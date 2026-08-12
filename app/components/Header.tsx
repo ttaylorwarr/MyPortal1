@@ -14,7 +14,7 @@ export default async function Header() {
         </Link>
         <nav className="flex items-center gap-4 text-sm font-medium text-slate-700">
           <Link href="/" className="hover:text-blue-700">
-            Browse
+            Home
           </Link>
           {user ? (
             <>
