@@ -33,6 +33,14 @@ export default async function AdminLayout({
           </Link>
           {user.role === "ADMIN" && (
             <Link
+              href="/admin/schedule"
+              className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+            >
+              Schedule
+            </Link>
+          )}
+          {user.role === "ADMIN" && (
+            <Link
               href="/admin/users"
               className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
             >
