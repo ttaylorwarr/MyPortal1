@@ -36,7 +36,7 @@ export default async function AdminLayout({
               href="/admin/schedule"
               className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
             >
-              Schedule
+              Manager Schedule
             </Link>
           )}
           {user.role === "ADMIN" && (
