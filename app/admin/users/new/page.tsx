@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/lib/auth";
-import { createUserAction } from "@/app/actions/users";
-import UserForm from "../UserForm";
+import InviteForm from "../InviteForm";
 
 export default async function NewUserPage() {
   await requireAdmin();
@@ -15,7 +14,7 @@ export default async function NewUserPage() {
         </Link>
       </div>
       <div className="mt-4">
-        <UserForm action={createUserAction} submitLabel="Create account" showPassword />
+        <InviteForm />
       </div>
     </div>
   );

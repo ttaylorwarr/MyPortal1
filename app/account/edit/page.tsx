@@ -22,7 +22,12 @@ export default async function EditAccountPage() {
           <h2 className="text-lg font-bold text-slate-900">Profile</h2>
           <p className="mt-1 text-sm text-slate-500">Update your name, username, or email.</p>
           <div className="mt-4">
-            <ProfileForm name={user.name} username={user.username} email={user.email} />
+            <ProfileForm
+              firstName={user.firstName}
+              lastName={user.lastName}
+              username={user.username}
+              email={user.email}
+            />
           </div>
         </div>
 

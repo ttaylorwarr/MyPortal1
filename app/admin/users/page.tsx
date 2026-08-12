@@ -13,9 +13,15 @@ const roleLabel: Record<string, string> = {
 export default async function AdminUsersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ saved?: string; created?: string; deleted?: string; error?: string }>;
+  searchParams: Promise<{
+    saved?: string;
+    deleted?: string;
+    error?: string;
+    invited?: string;
+    hireName?: string;
+  }>;
 }) {
-  const [me, { saved, created, deleted, error }] = await Promise.all([
+  const [me, { saved, deleted, error, invited, hireName }] = await Promise.all([
     requireAdmin(),
     searchParams,
   ]);
@@ -37,9 +43,17 @@ export default async function AdminUsersPage({
         </Link>
       </div>
 
-      {created && (
-        <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
-          Account created.
+      {invited && (
+        <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+          <p className="font-semibold">
+            Account created{hireName ? ` for ${hireName}` : ""}. Give them this Safe-Code so they
+            can activate their account at /activate and set their own password:
+          </p>
+          <p className="mt-2 font-mono text-lg font-bold tracking-widest">{invited}</p>
+          <p className="mt-1 text-xs text-blue-700">
+            This code won&apos;t be shown again here, but you can still find it on their edit page
+            until they activate.
+          </p>
         </div>
       )}
       {saved && (
@@ -59,13 +73,15 @@ export default async function AdminUsersPage({
       )}
 
       <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200 bg-white shadow-sm">
-        <table className="w-full min-w-[820px] text-left text-sm">
+        <table className="w-full min-w-[920px] text-left text-sm">
           <thead className="border-b border-slate-200 bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500">
             <tr>
               <th className="px-4 py-3">Name</th>
               <th className="px-4 py-3">Username</th>
               <th className="px-4 py-3">Email</th>
               <th className="px-4 py-3">Role</th>
+              <th className="px-4 py-3">Pay rate</th>
+              <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Bookings</th>
               <th className="px-4 py-3">Joined</th>
               <th className="px-4 py-3"></th>
@@ -74,14 +90,33 @@ export default async function AdminUsersPage({
           <tbody>
             {users.map((user) => {
               const isSelf = user.id === me.id;
+              const isPending = !user.passwordHash;
               return (
                 <tr key={user.id} className="border-b border-slate-100 last:border-0">
                   <td className="px-4 py-3 font-medium text-slate-900">
-                    {user.name} {isSelf && <span className="text-xs text-slate-400">(you)</span>}
+                    {user.firstName} {user.lastName}{" "}
+                    {isSelf && <span className="text-xs text-slate-400">(you)</span>}
                   </td>
                   <td className="px-4 py-3 text-slate-600">{user.username}</td>
                   <td className="px-4 py-3 text-slate-600">{user.email}</td>
                   <td className="px-4 py-3 text-slate-600">{roleLabel[user.role]}</td>
+                  <td className="px-4 py-3 text-slate-600">
+                    {user.hourlyPayRate != null ? `$${user.hourlyPayRate.toFixed(2)}/hr` : "—"}
+                  </td>
+                  <td className="px-4 py-3">
+                    {isPending ? (
+                      <span
+                        className="rounded-full bg-amber-100 px-2 py-1 text-xs font-semibold text-amber-800"
+                        title={user.safeCode ? `Safe-Code: ${user.safeCode}` : undefined}
+                      >
+                        Pending activation
+                      </span>
+                    ) : (
+                      <span className="rounded-full bg-green-100 px-2 py-1 text-xs font-semibold text-green-800">
+                        Active
+                      </span>
+                    )}
+                  </td>
                   <td className="px-4 py-3 text-slate-600">{user._count.bookings}</td>
                   <td className="px-4 py-3 text-slate-600">{formatDate(user.createdAt)}</td>
                   <td className="px-4 py-3 text-right">
@@ -92,7 +127,9 @@ export default async function AdminUsersPage({
                       >
                         Edit
                       </Link>
-                      {!isSelf && <DeleteUserButton userId={user.id} name={user.name} />}
+                      {!isSelf && (
+                        <DeleteUserButton userId={user.id} name={`${user.firstName} ${user.lastName}`} />
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -103,7 +140,8 @@ export default async function AdminUsersPage({
       </div>
       <p className="mt-3 text-xs text-slate-500">
         {roleLabel.ADMIN}: full access, including managing users. {roleLabel.MANAGER}: can manage
-        listings and view bookings. {roleLabel.MEMBER}: regular guest account.
+        listings and view bookings. {roleLabel.MEMBER}: regular guest account. New Manager/Member
+        accounts start pending until the person activates with their Safe-Code at /activate.
       </p>
     </div>
   );

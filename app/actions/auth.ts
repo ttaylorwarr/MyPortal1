@@ -16,7 +16,8 @@ const usernameSchema = z
   .regex(/^[a-z0-9_]+$/, "Username can only have lowercase letters, numbers, and underscores");
 
 const signupSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
+  firstName: z.string().trim().min(1, "First name is required"),
+  lastName: z.string().trim().min(1, "Last name is required"),
   username: usernameSchema,
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
   password: z.string().min(6, "Password must be at least 6 characters"),
@@ -27,7 +28,8 @@ export async function signupAction(
   formData: FormData
 ): Promise<AuthFormState> {
   const parsed = signupSchema.safeParse({
-    name: formData.get("name"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
     username: formData.get("username"),
     email: formData.get("email"),
     password: formData.get("password"),
@@ -37,7 +39,7 @@ export async function signupAction(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { name, username, email, password } = parsed.data;
+  const { firstName, lastName, username, email, password } = parsed.data;
 
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existing) {
@@ -51,7 +53,7 @@ export async function signupAction(
 
   const passwordHash = await hashPassword(password);
   const user = await prisma.user.create({
-    data: { name, username, email, passwordHash },
+    data: { firstName, lastName, username, email, passwordHash },
   });
 
   await createSession(user.id);
@@ -83,7 +85,13 @@ export async function loginAction(
   const user = await prisma.user.findFirst({
     where: { OR: [{ username: identifier }, { email: identifier }] },
   });
-  if (!user || !(await verifyPassword(password, user.passwordHash))) {
+  if (!user) {
+    return { error: "Invalid username/email or password" };
+  }
+  if (!user.passwordHash) {
+    return { error: "This account hasn't been activated yet. Use your Safe-Code to activate it." };
+  }
+  if (!(await verifyPassword(password, user.passwordHash))) {
     return { error: "Invalid username/email or password" };
   }
 

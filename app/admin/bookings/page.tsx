@@ -26,7 +26,9 @@ export default async function AdminBookingsPage() {
             {bookings.map((booking) => (
               <tr key={booking.id} className="border-b border-slate-100 last:border-0">
                 <td className="px-4 py-3">
-                  <p className="font-medium text-slate-900">{booking.user.name}</p>
+                  <p className="font-medium text-slate-900">
+                    {booking.user.firstName} {booking.user.lastName}
+                  </p>
                   <p className="text-xs text-slate-500">{booking.user.email}</p>
                 </td>
                 <td className="px-4 py-3 text-slate-600">{booking.property.title}</td>

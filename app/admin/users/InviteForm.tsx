@@ -1,31 +1,16 @@
 "use client";
 
 import { useActionState } from "react";
-import type { UserFormState } from "@/app/actions/users";
+import { createInviteAction, type UserFormState } from "@/app/actions/users";
 
-type UserDefaults = {
-  id: string;
-  firstName: string;
-  lastName: string;
-  username: string;
-  email: string;
-  role: string;
-  hourlyPayRate: number | null;
-};
-
-type UserFormProps = {
-  action: (state: UserFormState, formData: FormData) => Promise<UserFormState>;
-  defaults: UserDefaults;
-  submitLabel: string;
-};
-
-export default function UserForm({ action, defaults, submitLabel }: UserFormProps) {
-  const [state, formAction, pending] = useActionState<UserFormState, FormData>(action, undefined);
+export default function InviteForm() {
+  const [state, formAction, pending] = useActionState<UserFormState, FormData>(
+    createInviteAction,
+    undefined
+  );
 
   return (
     <form action={formAction} className="max-w-md space-y-4">
-      <input type="hidden" name="userId" value={defaults.id} />
-
       <div className="grid grid-cols-2 gap-3">
         <div>
           <label htmlFor="firstName" className="block text-sm font-medium text-slate-700">
@@ -36,7 +21,6 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
             name="firstName"
             type="text"
             required
-            defaultValue={defaults.firstName}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -49,7 +33,6 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
             name="lastName"
             type="text"
             required
-            defaultValue={defaults.lastName}
             className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
           />
         </div>
@@ -67,7 +50,6 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
           minLength={3}
           maxLength={20}
           pattern="[a-zA-Z0-9_]+"
-          defaultValue={defaults.username}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
         <p className="mt-1 text-xs text-slate-500">
@@ -84,7 +66,6 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
           name="email"
           type="email"
           required
-          defaultValue={defaults.email}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
@@ -96,10 +77,9 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
         <select
           id="role"
           name="role"
-          defaultValue={defaults.role}
+          defaultValue="MEMBER"
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         >
-          <option value="ADMIN">Admin</option>
           <option value="MANAGER">Manager</option>
           <option value="MEMBER">Member</option>
         </select>
@@ -116,10 +96,15 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
           min={0}
           step="0.01"
           placeholder="Optional"
-          defaultValue={defaults.hourlyPayRate ?? ""}
           className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
         />
       </div>
+
+      <p className="text-xs text-slate-500">
+        No password here — after you create the account, you&apos;ll get a Safe-Code to give this
+        person. They&apos;ll use it at <span className="font-medium">/activate</span> to set their
+        own password.
+      </p>
 
       {state?.error && (
         <p className="text-sm text-red-600" role="alert">
@@ -132,7 +117,7 @@ export default function UserForm({ action, defaults, submitLabel }: UserFormProp
         disabled={pending}
         className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-blue-700 disabled:opacity-60"
       >
-        {pending ? "Saving…" : submitLabel}
+        {pending ? "Creating…" : "Create account"}
       </button>
     </form>
   );

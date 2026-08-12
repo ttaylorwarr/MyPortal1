@@ -27,7 +27,7 @@ export default async function Header() {
                 </Link>
               )}
               <span className="hidden text-slate-400 sm:inline">|</span>
-              <span className="hidden text-slate-500 sm:inline">Hi, {user.name.split(" ")[0]}</span>
+              <span className="hidden text-slate-500 sm:inline">Hi, {user.firstName}</span>
               <form action={logoutAction}>
                 <button
                   type="submit"

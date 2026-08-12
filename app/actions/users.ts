@@ -3,11 +3,13 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireAdmin, hashPassword } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
+import { generateSafeCode } from "@/lib/safeCode";
 
 export type UserFormState = { error?: string } | undefined;
 
 const roleSchema = z.enum(["ADMIN", "MANAGER", "MEMBER"]);
+const hireRoleSchema = z.enum(["MANAGER", "MEMBER"]);
 
 const usernameSchema = z
   .string()
@@ -17,33 +19,43 @@ const usernameSchema = z
   .max(20, "Username must be 20 characters or fewer")
   .regex(/^[a-z0-9_]+$/, "Username can only have lowercase letters, numbers, and underscores");
 
-const createUserSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
+const hourlyPayRateSchema = z
+  .string()
+  .optional()
+  .transform((val) => (val && val.trim() ? Number(val) : undefined))
+  .refine((val) => val === undefined || (Number.isFinite(val) && val >= 0), {
+    message: "Enter a valid hourly pay rate",
+  });
+
+const inviteUserSchema = z.object({
+  firstName: z.string().trim().min(1, "First name is required"),
+  lastName: z.string().trim().min(1, "Last name is required"),
   username: usernameSchema,
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
-  role: roleSchema,
+  role: hireRoleSchema,
+  hourlyPayRate: hourlyPayRateSchema,
 });
 
-export async function createUserAction(
+export async function createInviteAction(
   _prevState: UserFormState,
   formData: FormData
 ): Promise<UserFormState> {
   await requireAdmin();
 
-  const parsed = createUserSchema.safeParse({
-    name: formData.get("name"),
+  const parsed = inviteUserSchema.safeParse({
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
     username: formData.get("username"),
     email: formData.get("email"),
-    password: formData.get("password"),
     role: formData.get("role"),
+    hourlyPayRate: formData.get("hourlyPayRate"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { name, username, email, password, role } = parsed.data;
+  const { firstName, lastName, username, email, role, hourlyPayRate } = parsed.data;
 
   const existing = await prisma.user.findFirst({ where: { OR: [{ email }, { username }] } });
   if (existing) {
@@ -55,16 +67,21 @@ export async function createUserAction(
     };
   }
 
-  const passwordHash = await hashPassword(password);
-  await prisma.user.create({ data: { name, username, email, passwordHash, role } });
-  redirect("/admin/users?created=1");
+  const safeCode = await generateSafeCode();
+  await prisma.user.create({
+    data: { firstName, lastName, username, email, role, hourlyPayRate, safeCode },
+  });
+
+  redirect(`/admin/users?invited=${safeCode}&hireName=${encodeURIComponent(`${firstName} ${lastName}`)}`);
 }
 
 const updateUserSchema = z.object({
-  name: z.string().trim().min(1, "Name is required"),
+  firstName: z.string().trim().min(1, "First name is required"),
+  lastName: z.string().trim().min(1, "Last name is required"),
   username: usernameSchema,
   email: z.string().trim().toLowerCase().email("Enter a valid email"),
   role: roleSchema,
+  hourlyPayRate: hourlyPayRateSchema,
 });
 
 export async function updateUserAction(
@@ -79,17 +96,19 @@ export async function updateUserAction(
   }
 
   const parsed = updateUserSchema.safeParse({
-    name: formData.get("name"),
+    firstName: formData.get("firstName"),
+    lastName: formData.get("lastName"),
     username: formData.get("username"),
     email: formData.get("email"),
     role: formData.get("role"),
+    hourlyPayRate: formData.get("hourlyPayRate"),
   });
 
   if (!parsed.success) {
     return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
   }
 
-  const { name, username, email, role } = parsed.data;
+  const { firstName, lastName, username, email, role, hourlyPayRate } = parsed.data;
 
   if (userId === admin.id && role !== "ADMIN") {
     return { error: "You can't remove your own admin access." };
@@ -107,7 +126,10 @@ export async function updateUserAction(
     };
   }
 
-  await prisma.user.update({ where: { id: userId }, data: { name, username, email, role } });
+  await prisma.user.update({
+    where: { id: userId },
+    data: { firstName, lastName, username, email, role, hourlyPayRate },
+  });
   redirect("/admin/users?saved=1");
 }
 
