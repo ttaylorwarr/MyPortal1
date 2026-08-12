@@ -74,9 +74,6 @@ export default function MobileMenu({ user }: { user: MobileUser }) {
                         <Link href="/employee/timesheet" onClick={close} className={subLinkClass}>
                           Timesheet
                         </Link>
-                        <Link href="/employee/bookings" onClick={close} className={subLinkClass}>
-                          Bookings
-                        </Link>
                       </>
                     )}
 
