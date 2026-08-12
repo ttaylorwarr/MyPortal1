@@ -93,6 +93,11 @@ export default function MobileMenu({ user }: { user: MobileUser }) {
                           Bookings
                         </Link>
                         {user.role === "ADMIN" && (
+                          <Link href="/admin/schedule" onClick={close} className={subLinkClass}>
+                            Schedule
+                          </Link>
+                        )}
+                        {user.role === "ADMIN" && (
                           <Link href="/admin/users" onClick={close} className={subLinkClass}>
                             Users
                           </Link>

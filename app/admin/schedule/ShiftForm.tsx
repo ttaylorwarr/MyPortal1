@@ -11,7 +11,7 @@ export default function ShiftForm({
   returnTo,
 }: {
   weekDays: { value: string; label: string }[];
-  staff: StaffOption[] | null;
+  staff: StaffOption[];
   returnTo: string;
 }) {
   const [state, formAction, pending] = useActionState<ScheduleFormState, FormData>(
@@ -23,25 +23,23 @@ export default function ShiftForm({
     <form action={formAction} className="flex flex-wrap items-end gap-3">
       <input type="hidden" name="returnTo" value={returnTo} />
 
-      {staff && (
-        <div>
-          <label htmlFor="userId" className="block text-xs font-semibold text-slate-600">
-            Person
-          </label>
-          <select
-            id="userId"
-            name="userId"
-            required
-            className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
-          >
-            {staff.map((person) => (
-              <option key={person.id} value={person.id}>
-                {person.firstName} {person.lastName}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      <div>
+        <label htmlFor="userId" className="block text-xs font-semibold text-slate-600">
+          Person
+        </label>
+        <select
+          id="userId"
+          name="userId"
+          required
+          className="mt-1 rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
+        >
+          {staff.map((person) => (
+            <option key={person.id} value={person.id}>
+              {person.firstName} {person.lastName}
+            </option>
+          ))}
+        </select>
+      </div>
 
       <div>
         <label htmlFor="date" className="block text-xs font-semibold text-slate-600">

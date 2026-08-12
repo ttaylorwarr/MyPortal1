@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { prisma } from "@/lib/db";
-import { requireEmployeeArea } from "@/lib/auth";
+import { requireAdmin } from "@/lib/auth";
 
 export type ScheduleFormState = { error?: string } | undefined;
 
@@ -12,7 +12,7 @@ const timeSchema = z.string().regex(/^([01]\d|2[0-3]):([0-5]\d)$/, "Use HH:MM fo
 const returnToSchema = z
   .string()
   .optional()
-  .transform((val) => (val && val.startsWith("/employee") ? val : "/employee"));
+  .transform((val) => (val && val.startsWith("/admin") ? val : "/admin/schedule"));
 
 const shiftSchema = z
   .object({
@@ -31,14 +31,10 @@ export async function createShiftAction(
   _prevState: ScheduleFormState,
   formData: FormData
 ): Promise<ScheduleFormState> {
-  const me = await requireEmployeeArea();
-  const isManager = me.role === "ADMIN" || me.role === "MANAGER";
-  const requestedUserId = formData.get("userId");
-  const userId =
-    isManager && typeof requestedUserId === "string" && requestedUserId ? requestedUserId : me.id;
+  await requireAdmin();
 
   const parsed = shiftSchema.safeParse({
-    userId,
+    userId: formData.get("userId"),
     date: formData.get("date"),
     startTime: formData.get("startTime"),
     endTime: formData.get("endTime"),
@@ -62,17 +58,11 @@ export async function createShiftAction(
 }
 
 export async function deleteShiftAction(formData: FormData) {
-  const me = await requireEmployeeArea();
+  await requireAdmin();
   const shiftId = formData.get("shiftId");
   if (typeof shiftId !== "string" || !shiftId) return;
 
-  const shift = await prisma.shift.findUnique({ where: { id: shiftId } });
-  if (!shift) return;
-
-  const isManager = me.role === "ADMIN" || me.role === "MANAGER";
-  if (!isManager && shift.userId !== me.id) return;
-
-  await prisma.shift.delete({ where: { id: shiftId } });
+  await prisma.shift.delete({ where: { id: shiftId } }).catch(() => null);
 
   const returnTo = returnToSchema.parse(formData.get("returnTo") ?? undefined);
   redirect(`${returnTo}?deleted=1`);
