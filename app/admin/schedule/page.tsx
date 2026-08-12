@@ -1,9 +1,9 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { toDateInputValue } from "@/lib/week";
-import { getMonthStart, getMonthGridWeeks, formatMonthLabel } from "@/lib/month";
-import ScheduleCalendar from "@/app/components/ScheduleCalendar";
+import { getMonthStart, formatMonthLabel } from "@/lib/month";
 import ShiftForm from "./ShiftForm";
+import ShiftList from "./ShiftList";
 
 export default async function AdminSchedulePage({
   searchParams,
@@ -14,15 +14,12 @@ export default async function AdminSchedulePage({
 
   const monthOffset = month ? Number(month) : 0;
   const monthStart = getMonthStart(new Date(), Number.isFinite(monthOffset) ? monthOffset : 0);
-  const weeks = getMonthGridWeeks(monthStart);
-  const rangeStart = weeks[0][0];
-  const rangeEnd = new Date(weeks[weeks.length - 1][6]);
-  rangeEnd.setDate(rangeEnd.getDate() + 1);
+  const nextMonthStart = getMonthStart(new Date(), (Number.isFinite(monthOffset) ? monthOffset : 0) + 1);
   const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
 
   const [shifts, staff] = await Promise.all([
     prisma.shift.findMany({
-      where: { date: { gte: rangeStart, lt: rangeEnd } },
+      where: { date: { gte: monthStart, lt: nextMonthStart } },
       include: { user: true },
       orderBy: [{ date: "asc" }, { startTime: "asc" }],
     }),
@@ -84,14 +81,7 @@ export default async function AdminSchedulePage({
       </div>
 
       <div className="mt-6">
-        <ScheduleCalendar
-          weeks={weeks}
-          monthIndex={monthStart.getMonth()}
-          shifts={shifts}
-          showNames
-          editable
-          returnTo={currentPath}
-        />
+        <ShiftList shifts={shifts} returnTo={currentPath} />
       </div>
     </div>
   );
