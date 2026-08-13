@@ -71,6 +71,9 @@ export default function MobileMenu({ user }: { user: MobileUser }) {
                     <Link href="/account" onClick={close} className={linkClass}>
                       My account
                     </Link>
+                    <Link href="/bank" onClick={close} className={linkClass}>
+                      Bank
+                    </Link>
 
                     {isStaff && (
                       <>
@@ -110,6 +113,11 @@ export default function MobileMenu({ user }: { user: MobileUser }) {
                           {user.role === "ADMIN" && (
                             <RowLink href="/admin/users" onClick={close}>
                               Users
+                            </RowLink>
+                          )}
+                          {user.role === "ADMIN" && (
+                            <RowLink href="/admin/bank" onClick={close}>
+                              Bank
                             </RowLink>
                           )}
                         </div>

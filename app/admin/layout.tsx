@@ -47,6 +47,14 @@ export default async function AdminLayout({
               Users
             </Link>
           )}
+          {user.role === "ADMIN" && (
+            <Link
+              href="/admin/bank"
+              className="whitespace-nowrap rounded-lg px-3 py-2 hover:bg-slate-100 hover:text-blue-700"
+            >
+              Bank
+            </Link>
+          )}
           <div className="my-2 hidden border-t border-slate-200 md:block" />
           <Link
             href="/"
