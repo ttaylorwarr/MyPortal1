@@ -1,5 +1,6 @@
 import { toDateInputValue } from "@/lib/week";
 import { colorFor } from "@/lib/scheduleColors";
+import { formatTimeString } from "@/lib/format";
 import { deleteShiftAction } from "@/app/actions/schedule";
 
 type CalendarShift = {
@@ -95,7 +96,7 @@ export default function ScheduleCalendar({
                     >
                       <div className="flex items-start justify-between gap-1">
                         <span className="font-semibold">
-                          {shift.startTime}–{shift.endTime}
+                          {formatTimeString(shift.startTime)}–{formatTimeString(shift.endTime)}
                         </span>
                         {editable && returnTo && (
                           <form action={deleteShiftAction}>
@@ -156,7 +157,7 @@ export default function ScheduleCalendar({
                     {listDateFmt.format(shift.date)}
                   </span>
                   <span className="text-slate-600">
-                    {shift.startTime}–{shift.endTime}
+                    {formatTimeString(shift.startTime)}–{formatTimeString(shift.endTime)}
                   </span>
                   {showNames && (
                     <span className="text-slate-500">

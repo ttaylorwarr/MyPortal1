@@ -30,6 +30,15 @@ export function toDateTimeLocalValue(date: Date) {
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
 }
 
+/** Formats an "HH:MM" 24-hour string (e.g. shift start/end times) as 12-hour with AM/PM. */
+export function formatTimeString(hhmm: string) {
+  const [hourStr, minuteStr] = hhmm.split(":");
+  const hour = Number(hourStr);
+  const period = hour >= 12 ? "PM" : "AM";
+  const displayHour = hour % 12 === 0 ? 12 : hour % 12;
+  return `${displayHour}:${minuteStr} ${period}`;
+}
+
 export function formatDuration(ms: number) {
   const totalMinutes = Math.max(0, Math.round(ms / 60000));
   const hours = Math.floor(totalMinutes / 60);
