@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { toDateInputValue } from "@/lib/week";
 import { getMonthStart, formatMonthLabel } from "@/lib/month";
+import { businessNow } from "@/lib/now";
 import ShiftForm from "./ShiftForm";
 import ShiftList from "./ShiftList";
 
@@ -13,8 +14,8 @@ export default async function AdminSchedulePage({
   const [, { month, saved, deleted }] = await Promise.all([requireAdmin(), searchParams]);
 
   const monthOffset = month ? Number(month) : 0;
-  const monthStart = getMonthStart(new Date(), Number.isFinite(monthOffset) ? monthOffset : 0);
-  const nextMonthStart = getMonthStart(new Date(), (Number.isFinite(monthOffset) ? monthOffset : 0) + 1);
+  const monthStart = getMonthStart(businessNow(), Number.isFinite(monthOffset) ? monthOffset : 0);
+  const nextMonthStart = getMonthStart(businessNow(), (Number.isFinite(monthOffset) ? monthOffset : 0) + 1);
   const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
 
   const [shifts, staff] = await Promise.all([

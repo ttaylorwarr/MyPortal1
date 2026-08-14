@@ -1,6 +1,7 @@
 import { requireEmployeeArea } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { getMonthStart, getMonthGridWeeks, formatMonthLabel } from "@/lib/month";
+import { businessNow } from "@/lib/now";
 import ScheduleCalendar from "@/app/components/ScheduleCalendar";
 
 export default async function SchedulePage({
@@ -11,7 +12,7 @@ export default async function SchedulePage({
   const [me, { month }] = await Promise.all([requireEmployeeArea(), searchParams]);
 
   const monthOffset = month ? Number(month) : 0;
-  const monthStart = getMonthStart(new Date(), Number.isFinite(monthOffset) ? monthOffset : 0);
+  const monthStart = getMonthStart(businessNow(), Number.isFinite(monthOffset) ? monthOffset : 0);
   const weeks = getMonthGridWeeks(monthStart);
   const rangeStart = weeks[0][0];
   const rangeEnd = new Date(weeks[weeks.length - 1][6]);

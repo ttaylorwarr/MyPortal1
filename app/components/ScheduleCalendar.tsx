@@ -1,6 +1,7 @@
 import { toDateInputValue } from "@/lib/week";
 import { colorFor } from "@/lib/scheduleColors";
 import { formatTimeString } from "@/lib/format";
+import { businessNow } from "@/lib/now";
 import { deleteShiftAction } from "@/app/actions/schedule";
 
 type CalendarShift = {
@@ -37,7 +38,7 @@ export default function ScheduleCalendar({
     month: "short",
     day: "numeric",
   });
-  const todayKey = toDateInputValue(new Date());
+  const todayKey = toDateInputValue(businessNow());
 
   const monthShifts = shifts
     .filter((s) => s.date.getMonth() === monthIndex)
