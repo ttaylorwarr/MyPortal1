@@ -1,22 +1,36 @@
 import { requireAdmin } from "@/lib/auth";
 import { prisma } from "@/lib/db";
-import { toDateInputValue } from "@/lib/week";
-import { getMonthStart, formatMonthLabel } from "@/lib/month";
+import { toDateInputValue, formatWeekRange } from "@/lib/week";
+import { getMonthStart, getMonthGridWeeks, formatMonthLabel } from "@/lib/month";
 import { businessNow } from "@/lib/now";
 import ShiftForm from "./ShiftForm";
 import ShiftList from "./ShiftList";
+import AutoScheduleForm from "./AutoScheduleForm";
 
 export default async function AdminSchedulePage({
   searchParams,
 }: {
-  searchParams: Promise<{ month?: string; saved?: string; deleted?: string }>;
+  searchParams: Promise<{
+    month?: string;
+    saved?: string;
+    deleted?: string;
+    autoScheduled?: string;
+    autoSkipped?: string;
+  }>;
 }) {
-  const [, { month, saved, deleted }] = await Promise.all([requireAdmin(), searchParams]);
+  const [, { month, saved, deleted, autoScheduled, autoSkipped }] = await Promise.all([
+    requireAdmin(),
+    searchParams,
+  ]);
 
   const monthOffset = month ? Number(month) : 0;
   const monthStart = getMonthStart(businessNow(), Number.isFinite(monthOffset) ? monthOffset : 0);
   const nextMonthStart = getMonthStart(businessNow(), (Number.isFinite(monthOffset) ? monthOffset : 0) + 1);
   const monthEnd = new Date(monthStart.getFullYear(), monthStart.getMonth() + 1, 0);
+  const weekOptions = getMonthGridWeeks(monthStart).map((week) => ({
+    value: toDateInputValue(week[0]),
+    label: formatWeekRange(week[0]),
+  }));
 
   const [shifts, staff] = await Promise.all([
     prisma.shift.findMany({
@@ -71,14 +85,21 @@ export default async function AdminSchedulePage({
           Shift removed.
         </div>
       )}
+      {autoScheduled != null && (
+        <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+          Added {autoScheduled} shift{autoScheduled === "1" ? "" : "s"} (40 hours).
+          {autoSkipped && ` Skipped ${autoSkipped} day${autoSkipped === "1" ? "" : "s"} that already had a shift.`}
+        </div>
+      )}
 
-      <div className="mt-6">
+      <div className="mt-6 flex flex-wrap gap-3">
         <ShiftForm
           staff={staff}
           minDate={toDateInputValue(monthStart)}
           maxDate={toDateInputValue(monthEnd)}
           returnTo={currentPath}
         />
+        <AutoScheduleForm staff={staff} weeks={weekOptions} returnTo={currentPath} />
       </div>
 
       <div className="mt-6">
