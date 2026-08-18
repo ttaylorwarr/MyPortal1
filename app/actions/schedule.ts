@@ -126,6 +126,49 @@ export async function autoScheduleWeekAction(
   );
 }
 
+const editShiftSchema = z
+  .object({
+    shiftId: z.string().min(1),
+    date: z.string().min(1, "Choose a date"),
+    startTime: timeSchema,
+    endTime: timeSchema,
+    returnTo: returnToSchema,
+  })
+  .refine((data) => data.endTime > data.startTime, {
+    message: "End time must be after start time",
+    path: ["endTime"],
+  });
+
+export async function editShiftAction(
+  _prevState: ScheduleFormState,
+  formData: FormData
+): Promise<ScheduleFormState> {
+  await requireAdmin();
+
+  const parsed = editShiftSchema.safeParse({
+    shiftId: formData.get("shiftId"),
+    date: formData.get("date"),
+    startTime: formData.get("startTime"),
+    endTime: formData.get("endTime"),
+    returnTo: formData.get("returnTo"),
+  });
+
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Invalid input" };
+  }
+
+  await prisma.shift.update({
+    where: { id: parsed.data.shiftId },
+    data: {
+      date: new Date(parsed.data.date),
+      startTime: parsed.data.startTime,
+      endTime: parsed.data.endTime,
+    },
+  });
+
+  redirect(`${parsed.data.returnTo}?edited=1`);
+}
+
 export async function deleteShiftAction(formData: FormData) {
   await requireAdmin();
   const shiftId = formData.get("shiftId");

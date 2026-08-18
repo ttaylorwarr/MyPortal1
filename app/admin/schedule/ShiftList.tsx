@@ -1,7 +1,6 @@
 import { toDateInputValue } from "@/lib/week";
 import { colorFor } from "@/lib/scheduleColors";
-import { formatTimeString } from "@/lib/format";
-import { deleteShiftAction } from "@/app/actions/schedule";
+import ShiftRow from "./ShiftRow";
 
 type Shift = {
   id: string;
@@ -13,12 +12,6 @@ type Shift = {
 };
 
 export default function ShiftList({ shifts, returnTo }: { shifts: Shift[]; returnTo: string }) {
-  const listDateFmt = new Intl.DateTimeFormat("en-US", {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-  });
-
   const sorted = shifts.slice().sort((a, b) => {
     const nameA = `${a.user.firstName} ${a.user.lastName}`;
     const nameB = `${b.user.firstName} ${b.user.lastName}`;
@@ -54,21 +47,7 @@ export default function ShiftList({ shifts, returnTo }: { shifts: Shift[]; retur
               </div>
               <ul className="divide-y divide-slate-100">
                 {group.shifts.map((shift) => (
-                  <li key={shift.id} className="flex items-center justify-between gap-3 px-4 py-2.5 text-sm">
-                    <div className="flex items-center gap-3">
-                      <span className="font-medium text-slate-900">{listDateFmt.format(shift.date)}</span>
-                      <span className="text-slate-600">
-                        {formatTimeString(shift.startTime)}–{formatTimeString(shift.endTime)}
-                      </span>
-                    </div>
-                    <form action={deleteShiftAction}>
-                      <input type="hidden" name="shiftId" value={shift.id} />
-                      <input type="hidden" name="returnTo" value={returnTo} />
-                      <button type="submit" className="text-xs font-semibold text-red-600 hover:underline">
-                        Remove
-                      </button>
-                    </form>
-                  </li>
+                  <ShiftRow key={shift.id} shift={shift} returnTo={returnTo} />
                 ))}
               </ul>
             </div>
