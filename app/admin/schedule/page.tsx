@@ -13,12 +13,13 @@ export default async function AdminSchedulePage({
   searchParams: Promise<{
     month?: string;
     saved?: string;
+    edited?: string;
     deleted?: string;
     autoScheduled?: string;
     autoSkipped?: string;
   }>;
 }) {
-  const [, { month, saved, deleted, autoScheduled, autoSkipped }] = await Promise.all([
+  const [, { month, saved, edited, deleted, autoScheduled, autoSkipped }] = await Promise.all([
     requireAdmin(),
     searchParams,
   ]);
@@ -78,6 +79,11 @@ export default async function AdminSchedulePage({
       {saved && (
         <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
           Shift added.
+        </div>
+      )}
+      {edited && (
+        <div className="mt-4 rounded-xl border border-blue-300 bg-blue-50 px-4 py-3 text-sm font-medium text-blue-800">
+          Shift updated.
         </div>
       )}
       {deleted && (
